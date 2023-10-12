@@ -1,0 +1,173 @@
+@import url("https://fonts.googleapis.com/css2?family=Fira+Sans&display=swap");
+
+* {
+  scroll-behavior: smooth;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-black: #39383d;
+  --secondary-black: rgba(24, 24, 29, 1);
+
+  --primary-white: #ffffff;
+  --secondary-white: rgba(255, 255, 255, 0.5);
+
+  --primary-font: "Fira Sans", sans-serif;
+}
+
+h2 {
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+a {
+  text-decoration: none;
+  color: var(--secondary-white);
+  transition: all 0.3s;
+}
+
+a:hover {
+  opacity: 0.5;
+}
+
+#root {
+  background: var(--secondary-black);
+  display: flex;
+  padding: 20px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  font-family: var(--primary-font);
+  color: var(--primary-white);
+}
+
+main {
+  display: flex;
+  align-items: stretch;
+  gap: 30px;
+  align-self: stretch;
+}
+
+aside {
+  display: none;
+}
+
+.c-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 30px;
+  flex: 1 0 0;
+  align-self: stretch;
+  overflow: hidden;
+}
+
+.c-article {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 50px;
+  align-self: stretch;
+  border-radius: 20px;
+  border: 2px solid var(--secondary-black);
+  background: var(--secondary-black);
+}
+
+.c-article-column {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+}
+
+.c-column-content {
+  width: 100%;
+  display: flex;
+  padding: 30px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+  align-self: stretch;
+  border-radius: 20px;
+  border: 2px solid var(--secondary-black);
+  background: var(--primary-black);
+}
+
+.carousel-container {
+  position: relative;
+  max-width: 100%;
+  border-radius: 30px;
+}
+
+.carousel {
+  display: flex;
+  overflow: hidden;
+  border-radius: 30px;
+  gap: 20px;
+}
+
+.carousel-slide {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+}
+
+.carousel-slide p {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0px 30px 0px 30px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  position: absolute;
+  bottom: 0;
+}
+
+.carousel-slide img {
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+}
+
+.carousel-slide.active {
+  opacity: 0.5;
+}
+
+.prev-button, .next-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  color: var(--primary-white);
+  font-family: var(--primary-font);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.prev-button:hover, .next-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.prev-button {
+  left: 0px;
+}
+
+.next-button {
+  right: 0px;
+}

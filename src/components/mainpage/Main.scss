@@ -1,0 +1,53 @@
+.carousel-container {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.carousel {
+  display: flex;
+  overflow: hidden;
+}
+
+.carousel-slide {
+  flex: 0 0 33.33%;
+  padding: 10px;
+  box-sizing: border-box;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.carousel-slide p {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.carousel-slide img {
+  max-width: 100%;
+  height: auto;
+}
+
+.carousel-slide.active {
+  transform: scale(1.1); /* Éléments actifs légèrement agrandis */
+}
+
+.prev-button,
+.next-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.prev-button {
+  left: 10px;
+}
+
+.next-button {
+  right: 10px;
+}

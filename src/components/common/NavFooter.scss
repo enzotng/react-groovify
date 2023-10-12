@@ -1,0 +1,47 @@
+$primary-white: var(--primary-white);
+$secondary-white: var(--secondary-white);
+$primary-black: var(--primary-black);
+$secondary-black: var(--secondary-black);
+$primary-font: var(--primary-font);
+
+.nav-footer-wrapper {
+  width: 100%;
+  background-color: $primary-black;
+  position: fixed;
+  bottom: 0;
+  border-radius: 10px 10px 0px 0px;
+  background: rgba(24, 24, 29, 0.8);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  nav {
+    ul {
+      list-style: none;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      flex-direction: row;
+      align-items: center;
+      li {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        a {
+          text-decoration: none;
+          color: $secondary-white;
+          &.active {
+            color: $primary-white; /* Couleur du texte lorsque le lien est actif */
+          }
+        }
+        img {
+          scale: 0.8;
+        }
+        span {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
