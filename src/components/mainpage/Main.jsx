@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper-bundle.css';
 import './Main.scss';
 
 function Main() {
@@ -73,29 +75,19 @@ function Main() {
   };
 
   return (
-    <div className="carousel-container">
-      <div className="carousel">
+    <div className="slider-wrapper">
+      <Swiper
+        spaceBetween={20}
+        slidesPerView={2.5}
+        speed={1000}
+      >
         {newReleases.map((album, index) => (
-          <div
-            key={index}
-            className={`carousel-slide ${
-              index === activeIndex ? 'active' : ''
-            }`}
-            style={{
-              left: `${left}px`, // Utilisation de la variable 'left' pour déplacer le slide
-            }}
-          >
-            <p>{album.name}</p>
+          <SwiperSlide key={index}>
             <img src={album.images[0].url} alt="" />
-          </div>
+            <p>{album.name}</p>
+          </SwiperSlide>
         ))}
-      </div>
-      <button className="prev-button" onClick={prevSlide}>
-        Précédent
-      </button>
-      <button className="next-button" onClick={nextSlide}>
-        Suivant
-      </button>
+      </Swiper>
     </div>
   );
 }
