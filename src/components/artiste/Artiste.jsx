@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import './Artiste.scss';
+import "./Artiste.scss";
 
 const Artiste = () => {
   const [nomArtiste, setNomArtiste] = useState("");
@@ -24,11 +24,14 @@ const Artiste = () => {
   };
 
   const obtenirInfoArtiste = async (idArtiste, jetonAcces) => {
-    const reponse = await fetch(`https://api.spotify.com/v1/artists/${idArtiste}`, {
-      headers: {
-        Authorization: "Bearer " + jetonAcces,
-      },
-    });
+    const reponse = await fetch(
+      `https://api.spotify.com/v1/artists/${idArtiste}`,
+      {
+        headers: {
+          Authorization: "Bearer " + jetonAcces,
+        },
+      }
+    );
     const donnees = await reponse.json();
     console.log(donnees);
     setGenres(donnees.genres);
@@ -48,16 +51,29 @@ const Artiste = () => {
 
   return (
     <main>
-      <div className="background-artiste" style={{ backgroundImage: `url(${imageArtiste})` }}></div>
+      <div
+        className="background-artiste"
+        style={{ backgroundImage: `url(${imageArtiste})` }}
+      ></div>
       <div className="artiste-wrapper">
         <div className="artiste-content">
-          {imageArtiste ? <img src={imageArtiste} alt={nomArtiste} width="50" height="50" /> :
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"> ... </svg>}
+          {imageArtiste ? (
+            <img src={imageArtiste} alt={nomArtiste} width="50" height="50" />
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+              {" "}
+              ...{" "}
+            </svg>
+          )}
           <h1>{nomArtiste}</h1>
         </div>
+
+        <div className="artiste-infos">{/* <p>{genres.join(", ")}</p> */}</div>
       </div>
-      <div className="artiste-infos">
-        <p>{genres.join(', ')}</p>
+
+      <div className="artiste-main">
+      <h2>Latest releases</h2>
+        <p>Gazoooo</p>
       </div>
     </main>
   );

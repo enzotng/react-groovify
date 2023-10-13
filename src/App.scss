@@ -8,10 +8,10 @@
 }
 
 :root {
-  --primary-black: #39383d;
-  --secondary-black: rgba(24, 24, 29, 1);
+  --primary-black: rgba(24, 24, 29, 1);
+  --secondary-black: #39383d;
 
-  --primary-white: #ffffff;
+  --primary-white: #FFFFFF;
   --secondary-white: rgba(255, 255, 255, 0.5);
 
   --primary-purple: #444492;
@@ -25,20 +25,21 @@ h1, h2 {
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  background: linear-gradient(109.6deg, rgb(78, 62, 255) 11.2%, rgb(164, 69, 255) 91.1%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  // background: linear-gradient(100deg, rgb(167, 162, 219) 5%, rgb(82, 70, 220) 100%);
+  // -webkit-background-clip: text;
+  // background-clip: text;
+  // color: transparent;
+  color: var(--primary-white);
 }
 
 a {
   text-decoration: none;
-  color: var(--secondary-black);
+  color: var(--primary-white);
   transition: all 0.3s;
 }
 
 #root {
-  background: var(--primary-white) !important;
+  background: var(--primary-black) !important;
   display: flex;
   padding: 20px;
   overflow: hidden;
@@ -47,14 +48,16 @@ a {
   width: 100%;
   gap: 40px;
   font-family: var(--primary-font);
-  color: var(--primary-black);
+  color: var(--primary-white);
 }
 
 main {
   display: flex;
   align-items: stretch;
   gap: 30px;
+  width: 100%;
   align-self: stretch;
+  flex-direction: column;
   .heading-wrapper {
     display: flex;
     width: 100%;
@@ -66,9 +69,8 @@ main {
     z-index: 1;
   
     svg {
-      width: 32px;
-      height: 32px;
-      fill: linear-gradient(109.6deg, rgb(78, 62, 255) 11.2%, rgb(164, 69, 255) 91.1%);
+      width: 24px;
+      height: 24px;
     }
   }
 

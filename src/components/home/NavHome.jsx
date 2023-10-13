@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Enzo from '../../assets/imgs/enzo.png';
 import Search from '../../assets/icon/c-vector-search.svg';
-import './Nav.scss';
+import './NavHome.scss';
 
 const Navbar = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);

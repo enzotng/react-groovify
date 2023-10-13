@@ -39,20 +39,43 @@ $primary-font: var(--primary-font);
     gap: 20px;
     width: 100%;
     img {
-      width: 150px;
-      height: 150px;
+      width: 125px;
+      height: 125px;
       border-radius: 50%;
+      border: 3.5px solid $primary-black;
       box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.5);
       object-fit: cover;
       aspect-ratio: 1/1;
     }
   }
-  
-  .artiste-infos {
+}
+
+.artiste-infos {
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60vw;
+  p {
+    margin-block: 0;
+    padding-inline: 0;
     font-size: 0.875rem;
     color: $primary-white;
-    text-align: right;
-    z-index: 1;
+    text-align: center;
     text-transform: capitalize;
+  }
+}
+
+.artiste-main {
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  p {
+    text-align: center;
+    width: 100%;
   }
 }

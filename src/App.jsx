@@ -1,7 +1,7 @@
 // Import général
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Nav from "./components/common/Nav";
+// import Nav from "./components/common/Nav";
 import Footer from "./components/common/Footer";
 import NavFooter from "./components/common/NavFooter";
 
@@ -19,7 +19,7 @@ import "./App.scss";
 const App = () => (
     <BrowserRouter>
         <>
-            <Nav></Nav>
+            {/* <Nav></Nav> */}
             <Routes>
                 <Route path="/" element={<Home />} exact />
                 <Route path="/explore" element={<Explore />} />
