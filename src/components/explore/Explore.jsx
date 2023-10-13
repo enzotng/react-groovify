@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Explore.scss';
 
 const Explore = () => {
-  const [query, setQuery] = useState('');
-  const [artists, setArtists] = useState([]);
-  const [tracks, setTracks] = useState([]);
+  const [recherche, setRecherche] = useState('');
+  const [artistes, setArtistes] = useState([]);
+  const [titres, setTitres] = useState([]);
   const [albums, setAlbums] = useState([]);
-  const [timeoutId, setTimeoutId] = useState(null);
+  const [idDelai, setIdDelai] = useState(null);
   const clientId = "5b3a9581c276435d901439ef12ed7fea";
   const clientSecret = "f59b7f4d04394c2ab79b8a19d34cb72e";
 
-  const [activeTab, setActiveTab] = useState('tracks');
-  const [selectedArtistId, setSelectedArtistId] = useState(null);
+  const [ongletActif, setOngletActif] = useState('titres');
+  const [idArtisteSelectionne, setIdArtisteSelectionne] = useState(null);
 
-  async function getAccessToken() {
+  async function obtenirJetonAcces() {
     try {
-      const response = await fetch("https://accounts.spotify.com/api/token", {
+      const reponse = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -23,132 +24,130 @@ const Explore = () => {
         },
         body: "grant_type=client_credentials",
       });
-      const data = await response.json();
-      return data.access_token;
-    } catch (error) {
-      console.error("Erreur :", error);
-      throw error;
+      const donnees = await reponse.json();
+      return donnees.access_token;
+    } catch (erreur) {
+      console.error("Erreur :", erreur);
+      throw erreur;
     }
   }
 
-  async function searchSpotify(accessToken) {
+  async function chercherSurSpotify(jetonAcces) {
     try {
-      const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=track,album,artist`, {
+      const reponse = await fetch(`https://api.spotify.com/v1/search?q=${recherche}&type=track,album,artist`, {
         headers: {
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + jetonAcces,
         },
       });
-      const data = await response.json();
-      setTracks(data.tracks.items);
-      setAlbums(data.albums.items);
-      setArtists(data.artists.items);
-    } catch (error) {
-      console.error("Erreur :", error);
-      throw error;
+      const donnees = await reponse.json();
+      setTitres(donnees.tracks.items);
+      setAlbums(donnees.albums.items);
+      setArtistes(donnees.artists.items);
+    } catch (erreur) {
+      console.error("Erreur :", erreur);
+      throw erreur;
     }
   }
 
-  async function getArtistAlbums(artistId, accessToken) {
+  async function obtenirAlbumsArtiste(idArtiste, jetonAcces) {
     try {
-      const response = await fetch(`https://api.spotify.com/v1/artists/${artistId}/albums`, {
+      const reponse = await fetch(`https://api.spotify.com/v1/artists/${idArtiste}/albums`, {
         headers: {
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + jetonAcces,
         },
       });
-      const data = await response.json();
-      setAlbums(data.items);
-    } catch (error) {
-      console.error("Erreur :", error);
-      throw error;
+      const donnees = await reponse.json();
+      setAlbums(donnees.items);
+    } catch (erreur) {
+      console.error("Erreur :", erreur);
+      throw erreur;
     }
   }
 
-  function getArtistNames(artists) {
-    return artists.map(artist => artist.name).join(', ');
+  function obtenirNomsArtistes(lesArtistes) {
+    return lesArtistes.map(artiste => artiste.name).join(', ');
   }
 
   useEffect(() => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+    if (idDelai) {
+      clearTimeout(idDelai);
     }
 
-    if (query) {
-      const timer = setTimeout(async () => {
-        const accessToken = await getAccessToken();
-        searchSpotify(accessToken);
+    if (recherche) {
+      const temporisateur = setTimeout(async () => {
+        const jetonAcces = await obtenirJetonAcces();
+        chercherSurSpotify(jetonAcces);
       }, 200);
 
-      setTimeoutId(timer);
+      setIdDelai(temporisateur);
     } else {
-      setArtists([]);
-      setTracks([]);
+      setArtistes([]);
+      setTitres([]);
       setAlbums([]);
     }
 
-    return () => clearTimeout(timeoutId);
-  }, [query]);
+    return () => clearTimeout(idDelai);
+  }, [recherche]);
 
   useEffect(() => {
-    if (selectedArtistId) {
-      const fetchAlbums = async () => {
-        const accessToken = await getAccessToken();
-        getArtistAlbums(selectedArtistId, accessToken);
+    if (idArtisteSelectionne) {
+      const chercherAlbums = async () => {
+        const jetonAcces = await obtenirJetonAcces();
+        obtenirAlbumsArtiste(idArtisteSelectionne, jetonAcces);
       };
 
-      fetchAlbums();
+      chercherAlbums();
     }
-  }, [selectedArtistId]);
+  }, [idArtisteSelectionne]);
 
-  const seenArtists = {};
-  const uniqueArtists = artists.filter(artist => {
-    const lowercaseName = artist.name.toLowerCase();
-    if (seenArtists[lowercaseName]) {
+  const artistesVus = {};
+  const artistesUniques = artistes.filter(artiste => {
+    const nomMinuscule = artiste.name.toLowerCase();
+    if (artistesVus[nomMinuscule]) {
       return false;
     }
-    seenArtists[lowercaseName] = true;
+    artistesVus[nomMinuscule] = true;
     return true;
   });
 
   const [genres, setGenres] = useState([]);
 
-  async function getGenres(accessToken) {
+  async function obtenirGenres(jetonAcces) {
     try {
-      const response = await fetch("https://api.spotify.com/v1/recommendations/available-genre-seeds", {
+      const reponse = await fetch("https://api.spotify.com/v1/recommendations/available-genre-seeds", {
         headers: {
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + jetonAcces,
         },
       });
-      const data = await response.json();
-      setGenres(data.genres);
-    } catch (error) {
-      console.error("Erreur lors de la récupération des genres :", error);
+      const donnees = await reponse.json();
+      setGenres(donnees.genres);
+    } catch (erreur) {
+      console.error("Erreur lors de la récupération des genres :", erreur);
     }
   }
 
   useEffect(() => {
-    const fetchGenres = async () => {
-      const accessToken = await getAccessToken();
-      getGenres(accessToken);
+    const chercherGenres = async () => {
+      const jetonAcces = await obtenirJetonAcces();
+      obtenirGenres(jetonAcces);
     };
 
-    fetchGenres();
+    chercherGenres();
   }, []);
 
-  function shuffle(array) {
-    let currentIndex = array.length, randomIndex;
+  function melanger(tableau) {
+    let indiceActuel = tableau.length, indiceAleatoire;
 
-    while (currentIndex !== 0) {
-
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    while (indiceActuel !== 0) {
+      indiceAleatoire = Math.floor(Math.random() * indiceActuel);
+      indiceActuel--;
+      [tableau[indiceActuel], tableau[indiceAleatoire]] = [tableau[indiceAleatoire], tableau[indiceActuel]];
     }
 
-    return array;
+    return tableau;
   }
 
-  const colors = shuffle([
+  const couleurs = melanger([
     'rgba(150,0,0,0.8)',
     'rgba(150,85,0,0.8)',
     'rgba(130,133,20,0.8)',
@@ -161,8 +160,8 @@ const Explore = () => {
     'rgba(150,55,55,0.8)'
   ]);
 
-  function getRandomColor(index) {
-    return colors[index % colors.length];
+  function obtenirCouleurAleatoire(indice) {
+    return couleurs[indice % couleurs.length];
   }
 
   return (
@@ -183,65 +182,66 @@ const Explore = () => {
           <h1>Explore</h1>
         </div>
         <div className="input-wrapper">
-          <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Artists, Songs, Podcasts & More..." />
-          {query && (
-            <svg className="clear-input" onClick={() => setQuery('')} xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256">
+          <input type="text" value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Artistes, Chansons, Podcasts & Plus..." />
+          {recherche && (
+            <svg className="clear-input" onClick={() => setRecherche('')} xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256">
               <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
             </svg>
           )}
         </div>
-        {query && (
+        {recherche && (
           <div className="tabs">
-            <div className={activeTab === 'tracks' ? 'tab active' : 'tab'} onClick={() => setActiveTab('tracks')}>Musiques</div>
-            <div className={activeTab === 'albums' ? 'tab active' : 'tab'} onClick={() => setActiveTab('albums')}>Albums</div>
-            <div className={activeTab === 'artists' ? 'tab active' : 'tab'} onClick={() => setActiveTab('artists')}>Artistes</div>
+            <div className={ongletActif === 'titres' ? 'tab active' : 'tab'} onClick={() => setOngletActif('titres')}>Musiques</div>
+            <div className={ongletActif === 'albums' ? 'tab active' : 'tab'} onClick={() => setOngletActif('albums')}>Albums</div>
+            <div className={ongletActif === 'artistes' ? 'tab active' : 'tab'} onClick={() => setOngletActif('artistes')}>Artistes</div>
           </div>
         )}
 
-        {activeTab === 'tracks' && (
+        {ongletActif === 'titres' && (
           <ul>
-            {tracks.map((track, index) => (
+            {titres.map((titre, index) => (
               <li key={index}>
-                <img src={track.album.images[0]?.url} alt={track.name} width="50" height="50" />
+                <img src={titre.album.images[0]?.url} alt={titre.name} width="50" height="50" />
                 <div className="text-wrapper">
-                  <p>{track.name}</p>
-                  <p>{getArtistNames(track.artists)}</p>
+                  <p>{titre.name}</p>
+                  <p>{obtenirNomsArtistes(titre.artists)}</p>
                 </div>
               </li>
             ))}
           </ul>
         )}
 
-        {activeTab === 'albums' && (
+        {ongletActif === 'albums' && (
           <ul>
             {albums.map((album, index) => (
               <li key={index}>
                 <img src={album.images[0]?.url} alt={album.name} width="50" height="50" />
                 <div className="text-wrapper">
                   <p>{album.name}</p>
-                  <p>{getArtistNames(album.artists)}</p>
+                  <p>{obtenirNomsArtistes(album.artists)}</p>
                 </div>
               </li>
             ))}
           </ul>
         )}
 
-
-        {activeTab === 'artists' && (
+        {ongletActif === 'artistes' && (
           <ul>
-            {uniqueArtists.map((artist, index) => (
-              <li key={index}>{artist.name}</li>
+            {artistesUniques.map((artiste, index) => (
+              <li key={index}>
+                <Link to={`/artiste/${artiste.id}`}>{artiste.name}</Link>
+              </li>
             ))}
           </ul>
         )}
 
-        {!query && (
+        {!recherche && (
           <div className="genre-cards">
             {genres.map((genre, index) => (
               <div
                 key={index}
                 className="genre-card"
-                style={{ background: getRandomColor(index) }}
+                style={{ background: obtenirCouleurAleatoire(index) }}
               >
                 <p>{genre}</p>
               </div>

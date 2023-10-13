@@ -38,12 +38,13 @@ a {
 }
 
 #root {
-  background: var(--primary-white);
+  background: var(--primary-white) !important;
   display: flex;
   padding: 20px;
+  overflow: hidden;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  width: 100%;
   gap: 40px;
   font-family: var(--primary-font);
   color: var(--primary-black);
@@ -56,8 +57,13 @@ main {
   align-self: stretch;
   .heading-wrapper {
     display: flex;
+    width: 100%;
     align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
     gap: 10px;
+    position: relative;
+    z-index: 1;
   
     svg {
       width: 32px;

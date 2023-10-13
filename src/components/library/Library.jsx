@@ -1,7 +1,7 @@
 import React from "react";
 import './Library.scss';
 
-function Library() {
+const Library = () => {
   return (
     <main>
       <div>

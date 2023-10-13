@@ -1,7 +1,7 @@
 import React from "react";
 
 import Main from "../mainpage/Main";
-import Artiste from "../mainpage/Artiste";
+import Artiste from "../artiste/Artiste";
 
 import "./Home.scss";
 

@@ -11,6 +11,7 @@ import Home from "./components/home/Home";
 import Explore from "./components/explore/Explore";
 import Library from "./components/library/Library";
 import Profile from "./components/profile/Profile";
+import Artiste from "./components/artiste/Artiste";
 
 // Import CSS
 import "./App.scss";
@@ -24,6 +25,7 @@ const App = () => (
                 <Route path="/explore" element={<Explore />} />
                 <Route path="/library" element={<Library />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/artiste/:id" element={<Artiste />} />
             </Routes>
             <NavFooter></NavFooter>
             <Footer></Footer>

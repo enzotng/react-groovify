@@ -8,6 +8,7 @@ $primary-font: var(--primary-font);
 
 header {
   width: 100%;
+  z-index: 1;
   .navbar {
     display: flex;
     align-items: center;

@@ -94,7 +94,9 @@ $primary-font: var(--primary-font);
       gap: 20px;
       align-items: center;
       padding-bottom: 20px;
-      border-bottom: 2px solid #efefef;
+      &:not(:last-child) {
+        border-bottom: 2px solid #efefef;
+      }
       img {
         border-radius: 10px;
         width: 100px;

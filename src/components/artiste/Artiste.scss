@@ -1,0 +1,58 @@
+$primary-white: var(--primary-white);
+$secondary-white: var(--secondary-white);
+$primary-black: var(--primary-black);
+$secondary-black: var(--secondary-black);
+$primary-purple: var(--primary-purple);
+$secondary-purple: var(--secondary-purple);
+$primary-font: var(--primary-font);
+
+.background-artiste {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background: no-repeat center center fixed;
+  filter: blur(10px) brightness(0.8);
+  height: 100%;
+  pointer-events: none;
+  width: 100%;
+  transform: scale(1.1);
+  z-index: 0;
+}
+
+.artiste-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  .artiste-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1;
+    gap: 20px;
+    width: 100%;
+    img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.5);
+      object-fit: cover;
+      aspect-ratio: 1/1;
+    }
+  }
+  
+  .artiste-infos {
+    font-size: 0.875rem;
+    color: $primary-white;
+    text-align: right;
+    z-index: 1;
+    text-transform: capitalize;
+  }
+}
