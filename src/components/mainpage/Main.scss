@@ -11,13 +11,21 @@ $primary-font: var(--primary-font);
   max-width: 100%;
 
   .swiper {
+    border-radius: 5px;
+    &.swiper-fade {
+      opacity: 0;
+      animation: apparitionSlider 1s forwards;
+    }
+
     .swiper-wrapper {
       .swiper-slide {
         display: flex;
         gap: 15px;
         flex-direction: column;
+        min-width: 100px;
+        min-height: 150px;
 
-        img, .skeleton-image {
+        img, .squelette-image {
           width: 100%;
           height: 100%;
           border-radius: 10px;
@@ -25,17 +33,28 @@ $primary-font: var(--primary-font);
           aspect-ratio: 1/1;
         }
 
-        .skeleton-image {
-          background-color: #DEDEDE;
-          animation: shimmer 1.5s infinite alternate;
+        .squelette-image, .squelette-text, .squelette-text-second {
+          background: 
+            linear-gradient(
+              90deg, 
+              $secondary-white,
+              #F5F5F5,
+              $secondary-white
+            );
+          background-size: 200% 100%;
+          animation: animationSquelette 5s infinite;
         }
 
-        .skeleton-text {
+        .squelette-text {
           height: 0.75rem;
-          width: 80%; // Adjust width as needed
-          background-color: #DEDEDE;
+          width: 80%;
           border-radius: 5px;
-          animation: shimmer 1.5s infinite alternate;
+        }
+
+        .squelette-text-second {
+          height: 0.75rem;
+          width: 50%;
+          border-radius: 5px;
         }
 
         .slider-wrapper-content {
@@ -68,12 +87,18 @@ $primary-font: var(--primary-font);
     }
   }
 
-  @keyframes shimmer {
+  @keyframes animationSquelette {
     0% {
       background-position: -200% 0;
     }
     100% {
       background-position: 200% 0;
+    }
+  }
+
+  @keyframes apparitionSlider {
+    to {
+      opacity: 1;
     }
   }
 }

@@ -194,8 +194,16 @@ const Explore = () => {
             ></path>
           </svg> */}
 
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#FFFFFF" viewBox="0 0 256 256"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"></path></svg>
-          
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="15"
+            fill="#FFFFFF"
+            viewBox="0 0 256 256"
+          >
+            <path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"></path>
+          </svg>
+
           <h1>Explore</h1>
         </div>
         <div className="input-wrapper">
@@ -244,16 +252,20 @@ const Explore = () => {
           <ul>
             {titres.map((titre, index) => (
               <li key={index}>
-                <img
-                  src={titre.album.images[0]?.url}
-                  alt={titre.name}
-                  width="50"
-                  height="50"
-                />
-                <div className="text-wrapper">
-                  <p>{titre.name}</p>
-                  <p>{obtenirNomsArtistes(titre.artists)}</p>
+                <div className="image-wrapper">
+                  <img
+                    src={titre.album.images[0]?.url}
+                    alt={titre.name}
+                    width="50"
+                    height="50"
+                  />
+                  <div className="text-content">
+                    <p>{titre.name}</p>
+                    <p>{obtenirNomsArtistes(titre.artists)}</p>
+                  </div>
                 </div>
+
+                <Link to={`/artiste/`}>Voir</Link>
               </li>
             ))}
           </ul>
@@ -261,9 +273,9 @@ const Explore = () => {
 
         {ongletActif === "albums" && albums.length > 0 && (
           <ul>
-            {albums.map((album, artiste, index) => (
-              <li key={index}>
-                <div className="album-wrapper">
+            {albums.map((album) => (
+              <li key={album.id}>
+                <div className="image-wrapper">
                   <img
                     src={album.images[0]?.url}
                     alt={album.name}
@@ -276,7 +288,9 @@ const Explore = () => {
                   </div>
                 </div>
 
-                <Link to={`/artiste/${artiste.id}/${album.artists}`}>Voir</Link>
+                <Link to={`/artiste/${album.artists[0].id}/${album.name}`}>
+                  Voir
+                </Link>
               </li>
             ))}
           </ul>
