@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Explore.scss";
 
@@ -12,7 +12,7 @@ const Explore = () => {
   const clientSecret = "f59b7f4d04394c2ab79b8a19d34cb72e";
 
   const [ongletActif, setOngletActif] = useState("titres");
-  const [idArtisteSelectionne, setIdArtisteSelectionne] = useState(null);
+  const [idArtisteSelectionne] = useState(null);
 
   async function obtenirJetonAcces() {
     try {
@@ -203,7 +203,7 @@ const Explore = () => {
             type="text"
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
-            placeholder="Artistes, Chansons, Albuy..."
+            placeholder="Artistes, Chansons, Albums..."
           />
           {recherche && (
             <svg
@@ -240,7 +240,7 @@ const Explore = () => {
           </div>
         )}
 
-        {ongletActif === "titres" && (
+        {ongletActif === "titres" && titres.length > 0 && (
           <ul>
             {titres.map((titre, index) => (
               <li key={index}>
@@ -259,7 +259,7 @@ const Explore = () => {
           </ul>
         )}
 
-        {ongletActif === "albums" && (
+        {ongletActif === "albums" && albums.length > 0 && (
           <ul>
             {albums.map((album, artiste, index) => (
               <li key={index}>
@@ -282,7 +282,7 @@ const Explore = () => {
           </ul>
         )}
 
-        {ongletActif === "artistes" && (
+        {ongletActif === "artistes" && artistesUniques.length > 0 && (
           <ul>
             {artistesUniques.map((artiste, index) => (
               <li key={index}>

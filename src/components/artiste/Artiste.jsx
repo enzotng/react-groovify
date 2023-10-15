@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./Artiste.scss";
 
@@ -19,6 +19,9 @@ const Artiste = () => {
       },
       body: "grant_type=client_credentials",
     });
+    if (!reponse.ok) {
+      throw new Error('Failed to fetch access token');
+    }
     const donnees = await reponse.json();
     return donnees.access_token;
   };
@@ -32,47 +35,59 @@ const Artiste = () => {
         },
       }
     );
+    if (!reponse.ok) {
+      throw new Error(`Failed to fetch artist info for id: ${idArtiste}`);
+    }
     const donnees = await reponse.json();
-    console.log(donnees);
-    setGenres(donnees.genres);
+    setGenres(donnees.genres || []);
     return donnees;
   };
 
   useEffect(() => {
+    if (!id) return;
+
     const chercherArtiste = async () => {
-      const jetonAcces = await obtenirJetonAcces();
-      const infoArtiste = await obtenirInfoArtiste(id, jetonAcces);
-      setNomArtiste(infoArtiste.name);
-      setImageArtiste(infoArtiste.images[0]?.url);
+      try {
+        const jetonAcces = await obtenirJetonAcces();
+        const infoArtiste = await obtenirInfoArtiste(id, jetonAcces);
+        setNomArtiste(infoArtiste.name);
+        setImageArtiste(infoArtiste.images[0]?.url);
+      } catch (error) {
+        console.error("Error fetching artist info:", error);
+      }
     };
 
     chercherArtiste();
-  }, [id, imageArtiste]);
+  }, [id]);
 
   return (
     <main>
-      <div
-        className="background-artiste"
-        style={{ backgroundImage: `url(${imageArtiste})` }}
-      ></div>
-      <div className="artiste-wrapper">
-        <div className="artiste-content">
-          {imageArtiste ? (
-            <img src={imageArtiste} alt={nomArtiste} width="50" height="50" />
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-              {" "}
-              ...{" "}
-            </svg>
-          )}
-          <h1>{nomArtiste}</h1>
-        </div>
+      <Suspense fallback={<div>Loading artist details...</div>}>
+        <div className="artiste-wrapper">
+          <div className="artiste-content">
+            {imageArtiste ? (
+              <img src={imageArtiste} alt={nomArtiste} width="50" height="50" />
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+                {/* ... */}
+              </svg>
+            )}
+            <h1>{nomArtiste}</h1>
+          </div>
 
-        <div className="artiste-infos">{/* <p>{genres.join(", ")}</p> */}</div>
-      </div>
+          <div className="artiste-infos">
+            {genres && genres.map((genre, index) => (
+              <p key={index}>
+                {genre}
+                {index < genres.length - 1 ? ", " : ""}
+              </p>
+            ))}
+          </div>
+        </div>
+      </Suspense>
 
       <div className="artiste-main">
-      <h2>Latest releases</h2>
+        <h2>Latest releases</h2>
         <p>Gazoooo</p>
       </div>
     </main>

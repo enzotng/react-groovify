@@ -5,11 +5,11 @@ import './Main.scss';
 
 function Main() {
   const [newReleases, setNewReleases] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [left, setLeft] = useState(0);
 
   const clientId = "5b3a9581c276435d901439ef12ed7fea";
   const clientSecret = "f59b7f4d04394c2ab79b8a19d34cb72e";
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getAccessToken() {
@@ -52,44 +52,39 @@ function Main() {
         const accessToken = await getAccessToken();
         const newReleases = await getNewReleases(accessToken);
         setNewReleases(newReleases);
+        setTimeout(() => setLoading(false), 2000); // Add a delay here
       } catch (error) {
         console.error("Erreur :", error);
+        setLoading(false);
       }
     })();
   }, []);
 
-  const prevSlide = () => {
-    setActiveIndex((prevIndex) => {
-      const newIndex = prevIndex === 0 ? newReleases.length - 1 : prevIndex - 1;
-      setLeft((prevLeft) => prevLeft + 400); // 400 est la largeur d'un slide, vous pouvez changer cela si nécessaire
-      return newIndex;
-    });
-  };
-
-  const nextSlide = () => {
-    setActiveIndex((prevIndex) => {
-      const newIndex = (prevIndex + 1) % newReleases.length;
-      setLeft((prevLeft) => prevLeft - 400); // 400 est la largeur d'un slide, vous pouvez changer cela si nécessaire
-      return newIndex;
-    });
-  };
-
   return (
     <div className="slider-wrapper">
-      <Swiper
-        spaceBetween={20}
-        slidesPerView={2.5}
-        speed={1000}
-      >
-        {newReleases.map((album, index) => (
-          <SwiperSlide key={index}>
-            <img src={album.images[0].url} alt="" />
-            <p>{album.name}</p>
-          </SwiperSlide>
-        ))}
+      <Swiper spaceBetween={15} slidesPerView={2.25} speed={1000} loop={true}>
+        {loading ? (
+          Array(5).fill(0).map((_, idx) => (
+            <SwiperSlide key={idx}>
+              <div className="skeleton-image"></div>
+              <div className="skeleton-text"></div>
+              <div className="skeleton-text"></div>
+            </SwiperSlide>
+          ))
+        ) : (
+          newReleases.map((album, index) => (
+            <SwiperSlide key={index}>
+              <img src={album.images[0].url} alt="" />
+              <div className="slider-wrapper-content">
+                <p className="artiste-album">{album.name}</p>
+                <p className="artiste-nom">{album.artists[0].name}</p>
+              </div>
+            </SwiperSlide>
+          ))
+        )}
       </Swiper>
     </div>
-  );
+  );  
 }
 
 export default Main;

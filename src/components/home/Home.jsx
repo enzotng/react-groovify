@@ -1,12 +1,10 @@
-import React from "react";
-
 import Main from "../mainpage/Main";
-import Artiste from "../artiste/Artiste";
 import NavHome from "./NavHome";
 
 import "./Home.scss";
 
-function Home() {
+const Home = () => {
+
   return (
     <>
       <NavHome />
@@ -32,13 +30,12 @@ function Home() {
 
             <article className="c-article">
               <h1>Top charts</h1>
-              <Artiste />
             </article>
           </section>
         </div>
       </main>
     </>
   );
-}
+};
 
 export default Home;
