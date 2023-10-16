@@ -62,16 +62,13 @@ $primary-font: var(--primary-font);
           gap: 5px;
           flex-direction: column;
 
-          .artiste-album, .artiste-nom {
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            white-space: nowrap;
-          }
-
           .artiste-album {
             display: -webkit-box;
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap;
             text-transform: uppercase;
             font-size: 0.75rem;
             font-weight: bold;
@@ -79,8 +76,7 @@ $primary-font: var(--primary-font);
           
           .artiste-nom {
             font-size: 0.75rem;
-            color: $secondary-black;
-            text-transform: none;
+            color: $secondary-white;
           }
         }
       }

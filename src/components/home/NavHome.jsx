@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Enzo from '../../assets/imgs/enzo.png';
-import Search from '../../assets/icon/c-vector-search.svg';
+// import Search from '../../assets/icon/c-vector-search.svg';
 import './NavHome.scss';
+
+const UserContext = React.createContext(null);
 
 const Navbar = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const username = useContext(UserContext); // Utilisation du contexte pour obtenir le nom d'utilisateur
 
   return (
     <header>
@@ -13,7 +16,7 @@ const Navbar = () => {
           <img className="navbar-logo" src={Enzo} alt="Logo" />
           <div className="navbar-user-text">
             <p className="thin">Good Morning 👋</p>
-            <p className="gras">Enzo Tang</p>
+            <p className="gras">{username || 'Fetching...'}</p>
           </div>
         </div>
 

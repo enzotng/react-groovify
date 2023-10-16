@@ -4,15 +4,17 @@ import NavHome from "./NavHome";
 import "./Home.scss";
 
 const Home = () => {
-
   return (
     <>
       <NavHome />
       <main>
         <div className="homeWrapper">
           <section className="c-section">
-            <h1>Latest releases</h1>
             <article className="c-article">
+              <h1>Recently played</h1>
+            </article>
+            <article className="c-article">
+            <h1>Latest releases</h1>
               <Main />
             </article>
 

@@ -1,0 +1,22 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #282828;
+
+  .auth-button {
+    padding: 15px 25px;
+    font-size: 1.2rem;
+    background-color: #1db954;
+    color: #ffffff;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #1ed760;
+    }
+  }
+}
