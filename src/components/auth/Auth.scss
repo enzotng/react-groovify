@@ -1,22 +1,51 @@
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #282828;
+/* Styles pour cacher la nav-footer-wrapper par défaut */
+.nav-footer-wrapper {
+  display: none;
+}
 
-  .auth-button {
-    padding: 15px 25px;
-    font-size: 1.2rem;
-    background-color: #1db954;
-    color: #ffffff;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+/* Styles pour masquer le débordement du body lorsque nécessaire */
+.overflow-hidden {
+  overflow: hidden;
+}
 
-    &:hover {
-      background-color: #1ed760;
+#root {
+  .auth-container {
+    background-color: var(--primary-black);
+    z-index: 9999;
+    width: 70vw;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 40px;
+    height: calc(100vh - 20px);
+    .auth-container-wrapper {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      flex-direction: column;
+      gap: 20px;
+      p {
+        font-size: 0.7rem;
+        opacity: 0.5;
+        font-style: italic;
+      }
     }
-  }
+    .auth-button {
+      width: 100%;
+      padding: 10px 15px;
+      font-size: 1rem;
+      font-family: var(--primary-font);
+      background-color: #1db954;
+      color: var(--primary-white);
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      &:hover {
+        background-color: #1ed760;
+      }
+    }
+  }  
 }

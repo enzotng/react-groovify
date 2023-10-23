@@ -14,7 +14,7 @@ const NavFooter = () => {
       <nav>
         <ul>
           <li>
-            <Link to="/" className={location.pathname === "/" ? "active" : ""}>
+            <Link to="/home" className={location.pathname === "/" ? "active" : ""}>
               <img src={House} alt="Home" />
               <span>Home</span>
             </Link>

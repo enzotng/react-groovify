@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import Enzo from '../../assets/imgs/enzo.png';
+// import Enzo from '../../assets/imgs/enzo.png';
 // import Search from '../../assets/icon/c-vector-search.svg';
 import './NavHome.scss';
 
@@ -7,16 +7,17 @@ const UserContext = React.createContext(null);
 
 const Navbar = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const username = useContext(UserContext); // Utilisation du contexte pour obtenir le nom d'utilisateur
+  const username = useContext(UserContext);
+  const userImage = useContext(UserContext);
 
   return (
     <header>
       <nav className="navbar">
         <div className="navbar-user">
-          <img className="navbar-logo" src={Enzo} alt="Logo" />
+          <img className="navbar-logo" src={userImage} alt="Logo" />
           <div className="navbar-user-text">
             <p className="thin">Good Morning 👋</p>
-            <p className="gras">{username || 'Fetching...'}</p>
+            <p className="gras">{username || 'Loading profile...'}</p>
           </div>
         </div>
 
@@ -24,11 +25,13 @@ const Navbar = () => {
           <div className="search-container">
             <svg onClick={() => setIsSearchVisible(!isSearchVisible)} xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg>
             {isSearchVisible && (
-              <input
-                className="search-input"
-                type="text"
-                placeholder="Rechercher..."
-              />
+              <div className="search-wrapper-full">
+                <input
+                  className="search-input"
+                  type="text"
+                  placeholder="Rechercher..."
+                />
+              </div>
             )}
           </div>
 

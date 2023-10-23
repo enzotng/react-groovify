@@ -27,6 +27,12 @@ const Home = () => {
                 <div className="c-column-content">
                   <p>Hip/Hop</p>
                 </div>
+                <div className="c-column-content">
+                  <p>Hip/Hop</p>
+                </div>
+                <div className="c-column-content">
+                  <p>Hip/Hop</p>
+                </div>
               </div>
             </article>
 
