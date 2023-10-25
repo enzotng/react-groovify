@@ -1,4 +1,5 @@
-import Main from "../mainpage/Main";
+import Latest from "./latestReleases/Latest";
+// import Recently from "./recentlyPlayed/Recently";
 import NavHome from "./NavHome";
 
 import "./Home.scss";
@@ -12,10 +13,11 @@ const Home = () => {
           <section className="c-section">
             <article className="c-article">
               <h1>Recently played</h1>
+              {/* <Recently /> */}
             </article>
             <article className="c-article">
             <h1>Latest releases</h1>
-              <Main />
+              <Latest />
             </article>
 
             <article className="c-article">

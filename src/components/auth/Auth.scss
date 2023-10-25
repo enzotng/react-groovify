@@ -1,25 +1,26 @@
-/* Styles pour cacher la nav-footer-wrapper par défaut */
-.nav-footer-wrapper {
-  display: none;
-}
 
-/* Styles pour masquer le débordement du body lorsque nécessaire */
+
 .overflow-hidden {
   overflow: hidden;
 }
 
 #root {
   .auth-container {
-    background-color: var(--primary-black);
+    background: url("../../assets/imgs/background-auth.svg") !important;
+    background-size: cover !important;
+    background-repeat: no-repeat;
+    transform: scale(1.05);
     z-index: 9999;
-    width: 70vw;
+    width: 100%;
     display: flex;
     align-items: center;
     text-align: center;
     justify-content: center;
     flex-direction: column;
     gap: 40px;
-    height: calc(100vh - 20px);
+    height: 100vh;
+    padding-inline: 20px;
+    overflow: hidden;
     .auth-container-wrapper {
       display: flex;
       align-items: center;
@@ -28,24 +29,11 @@
       gap: 20px;
       p {
         font-size: 0.7rem;
-        opacity: 0.5;
         font-style: italic;
       }
     }
-    .auth-button {
-      width: 100%;
-      padding: 10px 15px;
-      font-size: 1rem;
+    ._3xrlJ {
       font-family: var(--primary-font);
-      background-color: #1db954;
-      color: var(--primary-white);
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      &:hover {
-        background-color: #1ed760;
-      }
     }
-  }  
+  }
 }

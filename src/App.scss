@@ -3,6 +3,7 @@
 * {
   scroll-behavior: smooth;
   margin: 0;
+  padding: 0;
   box-sizing: border-box;
   font-size: 1rem;
 }
@@ -41,13 +42,12 @@ a {
 }
 
 #root {
-  background: var(--primary-black) !important;
+  background: var(--primary-black);
   display: flex;
-  padding: 20px;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  gap: 40px;
+  overflow-x: hidden;
   font-family: var(--primary-font);
   color: var(--primary-white);
 }
@@ -56,6 +56,7 @@ main {
   display: flex;
   align-items: stretch;
   gap: 30px;
+  padding: 20px;
   width: 100%;
   align-self: stretch;
   flex-direction: column;
@@ -112,3 +113,6 @@ main {
   }
 }
 
+// .nav-footer-wrapper {
+//   display: none;
+// }

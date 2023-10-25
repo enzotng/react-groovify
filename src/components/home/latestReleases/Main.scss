@@ -25,7 +25,8 @@ $primary-font: var(--primary-font);
         min-width: 100px;
         min-height: 150px;
 
-        img, .squelette-image {
+        img,
+        .squelette-image {
           width: 100%;
           height: 100%;
           border-radius: 10px;
@@ -33,16 +34,17 @@ $primary-font: var(--primary-font);
           aspect-ratio: 1/1;
         }
 
-        .squelette-image, .squelette-text, .squelette-text-second {
-          background: 
-            linear-gradient(
-              90deg, 
-              $secondary-white,
-              #F5F5F5,
-              $secondary-white
-            );
+        .squelette-image,
+        .squelette-text,
+        .squelette-text-second {
+          background: linear-gradient(
+            110deg,
+            #ececec 8%,
+            #dedede 18%,
+            #ececec 33%
+          );
           background-size: 200% 100%;
-          animation: animationSquelette 5s infinite;
+          animation: animationSquelette 1.5s infinite;
         }
 
         .squelette-text {
@@ -66,14 +68,14 @@ $primary-font: var(--primary-font);
             display: -webkit-box;
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
-            overflow: hidden; 
-            text-overflow: ellipsis; 
+            overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
             text-transform: uppercase;
             font-size: 0.75rem;
             font-weight: bold;
-          }       
-          
+          }
+
           .artiste-nom {
             font-size: 0.75rem;
             color: $secondary-white;
@@ -84,11 +86,8 @@ $primary-font: var(--primary-font);
   }
 
   @keyframes animationSquelette {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
+    to {
+      background-position-x: -200%;
     }
   }
 

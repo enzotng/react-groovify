@@ -1,23 +1,19 @@
-import React, { useState, useContext } from 'react';
-// import Enzo from '../../assets/imgs/enzo.png';
-// import Search from '../../assets/icon/c-vector-search.svg';
+import { useState } from 'react';
 import './NavHome.scss';
 
-const UserContext = React.createContext(null);
+import { useUserContext } from '../config/UserContext';
 
 const Navbar = () => {
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const username = useContext(UserContext);
-  const userImage = useContext(UserContext);
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
+    const { userProfile } = useUserContext();
 
   return (
     <header>
       <nav className="navbar">
         <div className="navbar-user">
-          <img className="navbar-logo" src={userImage} alt="Logo" />
-          <div className="navbar-user-text">
+        <img className="navbar-logo" src={userProfile ? userProfile.images[0].url : ''} alt="User" />          <div className="navbar-user-text">
             <p className="thin">Good Morning 👋</p>
-            <p className="gras">{username || 'Loading profile...'}</p>
+            <p className="gras">{userProfile ? userProfile.display_name : 'Loading profile...'}</p>
           </div>
         </div>
 

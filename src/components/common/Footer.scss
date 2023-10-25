@@ -1,7 +1,11 @@
 footer {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   align-self: stretch;
   border-radius: 20px;
+  p {
+    opacity: 0.5;
+    font-size: 0.7rem;
+  }
 }
