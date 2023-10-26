@@ -60,11 +60,11 @@ main {
   width: 100%;
   align-self: stretch;
   flex-direction: column;
+  margin-bottom: 52px;
   .heading-wrapper {
     display: flex;
     width: 100%;
     align-items: center;
-    justify-content: space-between;
     flex-direction: row;
     gap: 10px;
     position: relative;

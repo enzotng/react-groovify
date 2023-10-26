@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Logo from "../../assets/icon/logo.svg";
-import NavFooter from "../common/NavFooter";
+import Logo from "../../assets/icon/spotify.svg";
 import "./Auth.scss";
 
 import { SpotifyAuth, Scopes } from "react-spotify-auth";
@@ -27,6 +26,7 @@ const Auth = () => {
         },
       });
       const data = await response.json();
+      data.accessToken = accessToken;
       return data;
     } catch (error) {
       console.error(
@@ -70,7 +70,6 @@ const Auth = () => {
             }}
           />
         )}
-        <NavFooter />
       </div>
     </UserProvider>
   );

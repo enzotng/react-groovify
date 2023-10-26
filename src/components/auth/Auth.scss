@@ -1,39 +1,36 @@
-
-
-.overflow-hidden {
+.auth-container {
+  background: url("../../assets/imgs/background-auth.svg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat;
+  // transform: scale(1.05);
+  z-index: 9999;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 40px;
+  height: 100vh;
+  height: 100dvh;
+  padding-inline: 20px;
   overflow: hidden;
-}
-
-#root {
-  .auth-container {
-    background: url("../../assets/imgs/background-auth.svg") !important;
-    background-size: cover !important;
-    background-repeat: no-repeat;
-    transform: scale(1.05);
-    z-index: 9999;
-    width: 100%;
+  img {
+    width: 40px;
+    height: 40px;
+  }
+  .auth-container-wrapper {
     display: flex;
     align-items: center;
     text-align: center;
-    justify-content: center;
     flex-direction: column;
-    gap: 40px;
-    height: 100vh;
-    padding-inline: 20px;
-    overflow: hidden;
-    .auth-container-wrapper {
-      display: flex;
-      align-items: center;
-      text-align: center;
-      flex-direction: column;
-      gap: 20px;
-      p {
-        font-size: 0.7rem;
-        font-style: italic;
-      }
+    gap: 20px;
+    p {
+      font-size: 0.7rem;
+      font-style: italic;
     }
-    ._3xrlJ {
-      font-family: var(--primary-font);
-    }
+  }
+  ._3xrlJ {
+    font-family: var(--primary-font);
   }
 }

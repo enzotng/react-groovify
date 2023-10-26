@@ -8,11 +8,11 @@ $primary-font: var(--primary-font);
 
 .artiste-wrapper {
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
   gap: 20px;
   width: 100%;
+  min-height: 100vh;
   .artiste-content {
     display: flex;
     justify-content: center;

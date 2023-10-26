@@ -19,7 +19,7 @@ const Library = () => {
 
   return (
     <main>
-      <div>
+      <div className="library-wrapper">
         <div className="heading-wrapper">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
             <defs>
@@ -33,12 +33,11 @@ const Library = () => {
           </svg>
           <h1>My library, {userProfile?.display_name}</h1>
         </div>
-        <div className="playlists">
+        <div className="playlist-wrapper">
           {playlists.map(playlist => (
-            <div key={playlist.id} className="playlist">
+            <div key={playlist.id} className="playlist-content">
               <img src={playlist.images[0]?.url} alt={`${playlist.name} cover`} />
-              <h2>{playlist.name}</h2>
-              <p>{playlist.description}</p>
+              <p>{playlist.name}</p>
             </div>
           ))}
         </div>

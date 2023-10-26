@@ -168,8 +168,8 @@ const Explore = () => {
     "linear-gradient(45deg, rgba(134, 147, 257, 1), rgba(25, 28, 34, 1))",
     "linear-gradient(45deg, rgba(129, 142, 252, 1), rgba(24, 27, 33, 1))",
     "linear-gradient(45deg, rgba(141, 154, 264, 1), rgba(27, 30, 36, 1))",
-    "linear-gradient(45deg, rgba(118, 131, 245, 1), rgba(21, 24, 29, 1))"
-]);
+    "linear-gradient(45deg, rgba(118, 131, 245, 1), rgba(21, 24, 29, 1))",
+  ]);
 
   function obtenirGradientAleatoire(indice) {
     return gradients[indice % gradients.length];
@@ -179,7 +179,7 @@ const Explore = () => {
     <main>
       <div className="explore-wrapper">
         <div className="heading-wrapper">
-          {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
             <defs>
               <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="11.2%" stopColor="rgb(78, 62, 255)" />
@@ -190,16 +190,6 @@ const Explore = () => {
               fill="url(#gradient)"
               d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM172.42,72.84l-64,32a8.05,8.05,0,0,0-3.58,3.58l-32,64A8,8,0,0,0,80,184a8.1,8.1,0,0,0,3.58-.84l64-32a8.05,8.05,0,0,0,3.58-3.58l32-64a8,8,0,0,0-10.74-10.74ZM138,138,97.89,158.11,118,118l40.15-20.07Z"
             ></path>
-          </svg> */}
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="15"
-            height="15"
-            fill="#FFFFFF"
-            viewBox="0 0 256 256"
-          >
-            <path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"></path>
           </svg>
 
           <h1>Explore</h1>
