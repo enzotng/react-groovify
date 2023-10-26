@@ -14,24 +14,34 @@ export const UserProvider = ({ children }) => {
     Cookies.set('userProfile', JSON.stringify(userProfile));
   }, [userProfile]);
 
-  const fetchPlaylists = async () => {
+  const fetchPlaylists = async (retries = 3) => {
     try {
       const response = await fetch('https://api.spotify.com/v1/me/playlists', {
         headers: {
           Authorization: `Bearer ${userProfile.accessToken}`,
         },        
       });
+  
+      // Rate limiting error handling
+      if (response.status === 429 && retries > 0) {
+        const retryAfter = response.headers.get("Retry-After") || 5; // Default to 5 seconds if header not present
+        setTimeout(() => fetchPlaylists(retries - 1), retryAfter * 1000); // Convert to milliseconds
+        return;
+      }
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Erreur lors de la récupération des playlists:', errorData);
         return;
       }
+  
       const data = await response.json();
       setPlaylists(data.items);
     } catch (error) {
       console.error('Erreur lors de la récupération des playlists:', error);
     }
   };
+  
 
   return (
     <UserContext.Provider value={{ userProfile, setUserProfile, playlists, fetchPlaylists }}>

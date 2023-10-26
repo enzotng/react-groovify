@@ -1,0 +1,15 @@
+.security-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-height: 100vh;
+
+    button {
+        font-family: var(--primary-font);
+        background-color: transparent;
+        border: 1px solid var(--primary-white);
+        color: var(--primary-white);
+        border-radius: 20px;
+        padding: 10px 20px;
+    }
+}

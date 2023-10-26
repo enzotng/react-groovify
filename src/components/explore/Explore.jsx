@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PlayButton from "../../assets/icon/play.svg";
 import "./Explore.scss";
 
 const Explore = () => {
@@ -253,7 +254,9 @@ const Explore = () => {
                   </div>
                 </div>
 
-                <Link to={`/artiste/`}>Voir</Link>
+                <Link class="music-link" to={`/artiste/`}>
+                  <img src={PlayButton} alt="Icon Play"></img>
+                </Link>
               </li>
             ))}
           </ul>
@@ -276,8 +279,8 @@ const Explore = () => {
                   </div>
                 </div>
 
-                <Link to={`/artiste/${album.artists[0].id}/${album.name}`}>
-                  Voir
+                <Link class="music-link" to={`/artiste/${album.artists[0].id}/${album.name}`}>
+                  <img src={PlayButton} alt="Icon Play"></img>
                 </Link>
               </li>
             ))}

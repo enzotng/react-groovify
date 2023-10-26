@@ -113,6 +113,8 @@ main {
   }
 }
 
-// .nav-footer-wrapper {
-//   display: none;
-// }
+#arrow-back {
+  transform: rotate(90deg);
+  width: 15px;
+  height: 15px;
+}
