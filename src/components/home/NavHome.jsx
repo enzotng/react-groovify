@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./NavHome.scss";
 import { Link } from "react-router-dom";
 
@@ -6,10 +6,26 @@ import { useUserContext } from "../config/UserContext";
 
 const Navbar = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { userProfile } = useUserContext();
 
+  const handleScroll = () => {
+    if (window.scrollY > 0) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <header>
+    <header style={{ borderBottom: isScrolled ? "1px solid rgba(255, 255, 255, 0.05)" : "none" }}>
       <nav className="navbar">
         <div className="navbar-user">
           <img

@@ -10,6 +10,9 @@ header {
   width: 100%;
   z-index: 999;
   padding: 20px;
+  position: fixed;
+  top: 0;
+  background-color: var(--primary-black);
   .navbar {
     display: flex;
     align-items: center;

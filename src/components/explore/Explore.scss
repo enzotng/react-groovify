@@ -29,10 +29,6 @@ $primary-font: var(--primary-font);
       transform: translateY(-50%);
     }
 
-    &:focus-visible {
-      outline: none !important;
-    }
-
     input {
       width: 100%;
       box-sizing: border-box;
@@ -51,7 +47,6 @@ $primary-font: var(--primary-font);
 
       &:focus-visible {
         outline: none;
-        border: 1px solid rgba(255, 255, 255, 0.25);
       }
     }
 

@@ -1,4 +1,5 @@
 import Latest from "./latestReleases/Latest";
+import Genre from "./genre/Genre";
 // import Recently from "./recentlyPlayed/Recently";
 import NavHome from "./NavHome";
 
@@ -14,6 +15,7 @@ const Home = () => {
             <article className="c-article">
               <h1>Recently played</h1>
               {/* <Recently /> */}
+              <Latest />
             </article>
             <article className="c-article">
             <h1>Latest releases</h1>
@@ -22,20 +24,7 @@ const Home = () => {
 
             <article className="c-article">
               <h1>Musics genre</h1>
-              <div className="c-article-column">
-                <div className="c-column-content">
-                  <p>Rap</p>
-                </div>
-                <div className="c-column-content">
-                  <p>Hip/Hop</p>
-                </div>
-                <div className="c-column-content">
-                  <p>Hip/Hop</p>
-                </div>
-                <div className="c-column-content">
-                  <p>Hip/Hop</p>
-                </div>
-              </div>
+              <Genre />
             </article>
 
             <article className="c-article">

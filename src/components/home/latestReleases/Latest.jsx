@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import "./Main.scss";
+import "../Swiper.scss";
 
 function Main() {
   const [newReleases, setNewReleases] = useState([]);
