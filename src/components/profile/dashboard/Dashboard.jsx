@@ -9,8 +9,6 @@ const Dashboard = () => {
 
   const { userProfile} = useUserContext();
 
-  console.log(userProfile);
-
   // useEffect(() => {
   //   if (userProfile && userProfile.accessToken) {
   //     fetchPlaylists();
@@ -59,15 +57,14 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="dashboard-playlist">
-        <h2>Playlists</h2>
-        {/* <div className="playlist-wrapper">
-          {playlists.map(playlist => (
+        <h2>My Playlist(s)</h2>
+        <div className="playlist-wrapper">
+          {/* {playlists.map(playlist => (
             <div key={playlist.id} className="playlist-content">
               <img src={playlist.images[0]?.url} alt={`${playlist.name} cover`} />
-              <p>{playlist.name}</p>
             </div>
-          ))}
-        </div> */}
+          ))} */}
+        </div>
       </div>
     </div>
   );

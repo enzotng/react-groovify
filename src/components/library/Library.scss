@@ -12,8 +12,8 @@ $primary-font: var(--primary-font);
   gap: 20px;
   margin-bottom: 50px;
   .playlist-wrapper {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 30px;
     .playlist-content {
       display: flex;

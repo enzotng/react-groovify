@@ -1,0 +1,221 @@
+.profile-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    h2 {
+        text-decoration: underline;
+    }
+      li {
+        position: relative;
+        padding-left: 40px;
+        &::after {
+          content: "";
+          background: url("../../../assets/icon/c-vector-chevron.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 10px;
+          height: 10px;
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%) rotate(-90deg);
+        }
+        a {
+          width: 100%;
+          height: 100%;
+          font-size: 0.875rem;
+        }
+      }
+
+      .profile {
+        &::before {
+          content: "";
+          background: url("../../../assets/icon/account.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 16px;
+          height: 16px;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+
+      .notification {
+        &::before {
+          content: "";
+          background: url("../../../assets/icon/notification.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 16px;
+          height: 16px;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+
+      .equalizer {
+        &::before {
+          content: "";
+          background: url("../../../assets/icon/equalizer.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 16px;
+          height: 16px;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+
+      .security {
+        &::before {
+          content: "";
+          background: url("../../../assets/icon/security.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 16px;
+          height: 16px;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+
+      .wifi-streaming {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 20px;
+        &::before {
+          content: "";
+          background: url("../../../assets/icon/wifi.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 16px;
+          height: 16px;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        a {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          span {
+            font-size: 0.875rem;
+          }
+        }
+      }
+      .data-cellular {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 20px;
+        &::before {
+          content: "";
+          background: url("../../../assets/icon/data-cellular.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 16px;
+          height: 16px;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        a {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          span {
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
+
+    .dark-mode-switch {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
+
+      .darkmode {
+        position: relative;
+        padding-left: 40px;
+
+        font-size: 0.875rem;
+        &::before {
+          content: "";
+          background: url("../../../assets/icon/microphone.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          width: 16px;
+          height: 16px;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+    }
+
+    .switch {
+      position: relative;
+      width: 37.5px;
+      height: 18.5px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--primary-black);
+      transition: 0.4s;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 15px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 12.5px;
+      width: 12.5px;
+      border-radius: 50%;
+      left: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--primary-purple);
+      transition: 0.4s;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary-purple);
+    }
+
+    input:checked + .slider:before {
+      left: calc(100% - 15px);
+      background: var(--primary-black);
+    }
+  }

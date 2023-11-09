@@ -9,10 +9,10 @@
 }
 
 :root {
-  --primary-black: #0B091C;
+  --primary-black: #0b091c;
   --secondary-black: #39383d;
 
-  --primary-white: #FFFFFF;
+  --primary-white: #ffffff;
   --secondary-white: rgba(255, 255, 255, 0.5);
 
   --primary-purple: #444492;
@@ -21,7 +21,8 @@
   --primary-font: "Fira Sans", sans-serif;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-size: 1rem;
   font-style: normal;
   font-weight: 700;
@@ -68,7 +69,15 @@ main {
     flex-direction: row;
     gap: 10px;
     position: relative;
-  
+    a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
     svg {
       width: 24px;
       height: 24px;
@@ -80,7 +89,7 @@ main {
     flex-direction: column;
     gap: 30px;
   }
-  
+
   .c-article {
     display: flex;
     flex-direction: column;
@@ -88,13 +97,13 @@ main {
     gap: 30px;
     align-self: stretch;
   }
-  
+
   .c-article-column {
     display: flex;
     gap: 15px;
     overflow-x: scroll;
   }
-  
+
   .c-column-content {
     display: flex;
     box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.5);
@@ -105,7 +114,11 @@ main {
     align-items: center;
     gap: 20px;
     border-radius: 10px;
-    background: linear-gradient(109.6deg, rgb(78, 62, 255) 11.2%, rgb(164, 69, 255) 91.1%);
+    background: linear-gradient(
+      109.6deg,
+      rgb(78, 62, 255) 11.2%,
+      rgb(164, 69, 255) 91.1%
+    );
     p {
       color: var(--primary-white);
       font-style: italic;

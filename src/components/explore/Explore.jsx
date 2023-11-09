@@ -217,6 +217,12 @@ const Explore = () => {
         {recherche && (
           <div className="tabs">
             <div
+              className={ongletActif === "resultat" ? "tab active" : "tab"}
+              onClick={() => setOngletActif("resultat")}
+            >
+              Meilleur résultat
+            </div>
+            <div
               className={ongletActif === "titres" ? "tab active" : "tab"}
               onClick={() => setOngletActif("titres")}
             >
@@ -235,6 +241,31 @@ const Explore = () => {
               Artistes
             </div>
           </div>
+        )}
+
+        {ongletActif === "resultat" && titres.length > 0 && (
+          <ul>
+            {titres.map((titre, index) => (
+              <li key={index}>
+                <div className="image-wrapper">
+                  <img
+                    src={titre.album.images[0]?.url}
+                    alt={titre.name}
+                    width="50"
+                    height="50"
+                  />
+                  <div className="text-content">
+                    <p>{titre.name}</p>
+                    <p>{obtenirNomsArtistes(titre.artists)}</p>
+                  </div>
+                </div>
+
+                <Link class="music-link" to={`/artiste/`}>
+                  <img src={PlayButton} alt="Icon Play"></img>
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
 
         {ongletActif === "titres" && titres.length > 0 && (
@@ -279,7 +310,10 @@ const Explore = () => {
                   </div>
                 </div>
 
-                <Link class="music-link" to={`/artiste/${album.artists[0].id}/${album.name}`}>
+                <Link
+                  class="music-link"
+                  to={`/artiste/${album.artists[0].id}/${album.name}`}
+                >
                   <img src={PlayButton} alt="Icon Play"></img>
                 </Link>
               </li>
@@ -303,7 +337,7 @@ const Explore = () => {
               <div
                 key={index}
                 className="genre-card"
-                style={{ background: obtenirGradientAleatoire(index) }}
+                // style={{ background: obtenirGradientAleatoire(index) }}
               >
                 <p>{genre}</p>
               </div>

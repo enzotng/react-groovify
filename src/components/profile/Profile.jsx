@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, Routes, Route, useOutlet, useLocation } from "react-router-dom";
 import { useUserContext } from "../config/UserContext";
 
@@ -6,6 +5,7 @@ import Dashboard from "./dashboard/Dashboard";
 import Notification from "./notification/Notification";
 import Audio from "./audio/Audio.jsx";
 import Security from "./security/Security.jsx";
+import ToggleSwitch from "../common/ToggleSwitch/ToggleSwitch.jsx"
 import Language from "./language/Language.jsx";
 
 import "./Profile.scss";
@@ -13,15 +13,9 @@ import "./Profile.scss";
 const Profile = () => {
   const { userProfile } = useUserContext();
 
-  console.log(userProfile);
-
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // console.log(userProfile);
 
   const outlet = useOutlet();
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
 
   const location = useLocation();
 
@@ -96,17 +90,7 @@ const Profile = () => {
                   </Link>
                 </li>
               </ul>
-              <div className="dark-mode-switch">
-                <span className="darkmode">Darkmode</span>
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    checked={isDarkMode}
-                    onChange={toggleDarkMode}
-                  />
-                  <span className="slider"></span>
-                </label>
-              </div>
+              <ToggleSwitch/>
             </div>
           </div>
         </div>
