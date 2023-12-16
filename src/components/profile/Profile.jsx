@@ -14,6 +14,11 @@ const Profile = () => {
   const { userProfile } = useUserContext();
 
   // console.log(userProfile);
+<<<<<<< HEAD
+
+  const [isDarkMode, setIsDarkMode] = useState(false);
+=======
+>>>>>>> 67e2c8d712ef7a1c3593a10c388f1378a4e5fad1
 
   const outlet = useOutlet();
 
