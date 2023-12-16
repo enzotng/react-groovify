@@ -166,79 +166,8 @@
             }
           }
         }
-      }
 
-      .dark-mode-switch {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        justify-content: space-between;
-
-        .darkmode {
-          position: relative;
-          padding-left: 40px;
-
-          font-size: 0.875rem;
-          &::before {
-            content: "";
-            background: url("../../assets/icon/darkmode.svg");
-            background-repeat: no-repeat;
-            background-size: contain;
-            width: 16px;
-            height: 16px;
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-          }
-        }
-      }
-
-      .switch {
-        position: relative;
-        width: 37.5px;
-        height: 18.5px;
-      }
-
-      .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-
-      .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: var(--primary-black);
-        transition: 0.4s;
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 15px;
-      }
-
-      .slider:before {
-        position: absolute;
-        content: "";
-        height: 12.5px;
-        width: 12.5px;
-        border-radius: 50%;
-        left: 2px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: var(--primary-purple);
-        transition: 0.4s;
-      }
-
-      input:checked + .slider {
-        background-color: var(--primary-purple);
-      }
-
-      input:checked + .slider:before {
-        left: calc(100% - 15px);
-        background: var(--primary-black);
+        
       }
     }
   }

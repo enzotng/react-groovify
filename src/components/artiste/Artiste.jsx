@@ -9,6 +9,7 @@ const Artiste = () => {
   const { id } = useParams();
   const [genres, setGenres] = useState([]);
   const [imageArtiste, setImageArtiste] = useState("");
+  const [followersArtiste, setFollowers] = useState("");
 
   const obtenirJetonAcces = async () => {
     const reponse = await fetch("https://accounts.spotify.com/api/token", {
@@ -20,7 +21,7 @@ const Artiste = () => {
       body: "grant_type=client_credentials",
     });
     if (!reponse.ok) {
-      throw new Error('Failed to fetch access token');
+      throw new Error("Failed to fetch access token");
     }
     const donnees = await reponse.json();
     return donnees.access_token;
@@ -51,6 +52,7 @@ const Artiste = () => {
         const jetonAcces = await obtenirJetonAcces();
         const infoArtiste = await obtenirInfoArtiste(id, jetonAcces);
         setNomArtiste(infoArtiste.name);
+        setFollowers(infoArtiste.followers.total);
         setImageArtiste(infoArtiste.images[0]?.url);
       } catch (error) {
         console.error("Error fetching artist info:", error);
@@ -72,19 +74,26 @@ const Artiste = () => {
                 {/* ... */}
               </svg>
             )}
-            <h1>{nomArtiste}</h1>
+            <div className="artiste-test">
+              <h1>{nomArtiste}</h1>
+              <h1>{followersArtiste}</h1>
+            </div>
           </div>
 
           <div className="artiste-infos">
-            {genres && genres.map((genre, index) => (
-              <p key={index}>
-                {genre}
-                {index < genres.length - 1 ? ", " : ""}
-              </p>
-            ))}
+            {genres &&
+              genres.map((genre, index) => (
+                <p key={index}>
+                  {genre}
+                  {index < genres.length - 1 ? ", " : ""}
+                </p>
+              ))}
           </div>
+
+          <div className="followers"></div>
         </div>
       </Suspense>
+      <h2>Popularity</h2>
 
       <div className="artiste-main">
         <h2>Latest releases</h2>

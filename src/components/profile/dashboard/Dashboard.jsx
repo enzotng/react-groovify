@@ -9,6 +9,7 @@ const Dashboard = () => {
 
   // const { userProfile} = useUserContext();
 
+<<<<<<< HEAD
   useEffect(() => {
     if (userProfile && userProfile.accessToken) {
       fetchPlaylists();
@@ -20,6 +21,19 @@ const Dashboard = () => {
   if (!playlists) {
     return <main>Loading...</main>;
   }
+=======
+  // useEffect(() => {
+  //   if (userProfile && userProfile.accessToken) {
+  //     fetchPlaylists();
+  //   } else {
+  //     // Rediriger vers la page d'authentification ou gérer l'erreur
+  //   }
+  // }, [fetchPlaylists, userProfile]);
+
+  // if (!playlists) {
+  //   return <main>Loading...</main>;
+  // }
+>>>>>>> 67e2c8d712ef7a1c3593a10c388f1378a4e5fad1
 
   return (
     <div className="dashboard-wrapper">
@@ -57,14 +71,23 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="dashboard-playlist">
+<<<<<<< HEAD
         <h2>Playlists</h2>
         <div className="playlist-wrapper">
           {playlists.map(playlist => (
+=======
+        <h2>My Playlist(s)</h2>
+        <div className="playlist-wrapper">
+          {/* {playlists.map(playlist => (
+>>>>>>> 67e2c8d712ef7a1c3593a10c388f1378a4e5fad1
             <div key={playlist.id} className="playlist-content">
               <img src={playlist.images[0]?.url} alt={`${playlist.name} cover`} />
-              <p>{playlist.name}</p>
             </div>
+<<<<<<< HEAD
           ))}
+=======
+          ))} */}
+>>>>>>> 67e2c8d712ef7a1c3593a10c388f1378a4e5fad1
         </div>
       </div>
     </div>

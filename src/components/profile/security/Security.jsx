@@ -1,23 +1,13 @@
+import { Link } from "react-router-dom";
 import { useUserContext } from "../../config/UserContext";
-import { Link, Routes, Route, useOutlet } from "react-router-dom";
 
-import Checkbox from "../../common/Checkbox";
+import ToggleSwitch from "../../common/ToggleSwitch/ToggleSwitch";
 
 import "./Security.scss";
 
 const Security = () => {
+  // const { userProfile } = useUserContext();
 
-  const { userProfile} = useUserContext();
-
-  const [isChecked, setIsChecked] = useState(false);
-
-  const toggleCheckbox = () => {
-    setIsChecked(!isChecked);
-  };
-
-  const toggleClass = isChecked ? "toggle checked" : "toggle";
-
-  
   return (
     <div className="security-wrapper">
       <div className="heading-wrapper">
@@ -38,11 +28,9 @@ const Security = () => {
             />
           </svg>
         </Link>
-
-        <h1>Security, {userProfile.display_name}</h1>
+        <h1>Security</h1>
       </div>
-      <button>Change password</button>
-      <Checkbox />
+      <ToggleSwitch />
     </div>
   );
 };
