@@ -5,23 +5,21 @@ import { useEffect } from "react";
 import "./Dashboard.scss";
 
 const Dashboard = () => {
-  // const { userProfile, playlists, fetchPlaylists } = useUserContext();
+  const { userProfile, playlists, fetchPlaylists } = useUserContext();
 
-  const { userProfile} = useUserContext();
+  // const { userProfile} = useUserContext();
 
-  console.log(userProfile);
+  useEffect(() => {
+    if (userProfile && userProfile.accessToken) {
+      fetchPlaylists();
+    } else {
+      // Rediriger vers la page d'authentification ou gérer l'erreur
+    }
+  }, [fetchPlaylists, userProfile]);
 
-  // useEffect(() => {
-  //   if (userProfile && userProfile.accessToken) {
-  //     fetchPlaylists();
-  //   } else {
-  //     // Rediriger vers la page d'authentification ou gérer l'erreur
-  //   }
-  // }, [fetchPlaylists, userProfile]);
-
-  // if (!playlists) {
-  //   return <main>Loading...</main>;
-  // }
+  if (!playlists) {
+    return <main>Loading...</main>;
+  }
 
   return (
     <div className="dashboard-wrapper">
@@ -60,14 +58,14 @@ const Dashboard = () => {
       </div>
       <div className="dashboard-playlist">
         <h2>Playlists</h2>
-        {/* <div className="playlist-wrapper">
+        <div className="playlist-wrapper">
           {playlists.map(playlist => (
             <div key={playlist.id} className="playlist-content">
               <img src={playlist.images[0]?.url} alt={`${playlist.name} cover`} />
               <p>{playlist.name}</p>
             </div>
           ))}
-        </div> */}
+        </div>
       </div>
     </div>
   );

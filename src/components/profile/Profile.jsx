@@ -13,7 +13,7 @@ import "./Profile.scss";
 const Profile = () => {
   const { userProfile } = useUserContext();
 
-  console.log(userProfile);
+  // console.log(userProfile);
 
   const [isDarkMode, setIsDarkMode] = useState(false);
 

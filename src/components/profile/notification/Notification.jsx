@@ -1,9 +1,13 @@
+import { useState, useEffect } from 'react';
 import { useUserContext } from "../../config/UserContext";
-import { Link, Routes, Route, useOutlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import "./Notification.scss";
 
 const Notification = () => {
+  // const { userProfile, fetchPlaylists } = useUserContext();
+  const [activeTab, setActiveTab] = useState("Songs");
+
   return (
     <div className="notification-wrapper">
       <div className="heading-wrapper">
@@ -28,8 +32,31 @@ const Notification = () => {
         <h1>Notification(s)</h1>
       </div>
       <div className="notification-content">
-        <p>TEST</p>
-      </div>
+        <div className="tabs">
+          <button
+            className={activeTab === "Songs" ? "active" : ""}
+            onClick={() => setActiveTab("Songs")}
+          >
+            Songs
+          </button>
+          <button
+            className={activeTab === "Podcasts" ? "active" : ""}
+            onClick={() => setActiveTab("Podcasts")}
+          >
+            Podcasts
+          </button>
+        </div>
+
+        <div className="tabs-content-wrapper">
+          <div className={`tab-content ${activeTab}`}>
+            <div className="songs">
+              <h2>Songs</h2>
+            </div>
+            <div className="podcasts">
+              <h2>Podcasts</h2>
+            </div>
+          </div>
+        </div>      </div>
     </div>
   );
 };
