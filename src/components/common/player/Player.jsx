@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useUserContext } from '../../config/UserContext';
+import Play from '../../../assets/icon/play.svg';
+import Pause from '../../../assets/icon/pause.svg';
 import './Player.scss';
 
 const Player = () => {
@@ -7,7 +9,14 @@ const Player = () => {
     const [currentTrack, setCurrentTrack] = useState(null);
     const [progressMs, setProgressMs] = useState(0);
     const [durationMs, setDurationMs] = useState(0);
-    const { accessToken } = useUserContext();
+    const [lyrics, setLyrics] = useState('');
+    const { accessToken, musixAPI } = useUserContext();
+
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleExpansion = () => {
+        setIsExpanded(!isExpanded);
+    };
 
     // console.log("Access Token:", accessToken);
 
@@ -20,7 +29,7 @@ const Player = () => {
 
             if (response.status === 204) {
                 setCurrentTrack(null);
-                setProgress(0);
+                setProgressMs(0);
             } else if (response.status === 401) {
                 // console.error("Erreur d'authentification. Veuillez vérifier votre token.");
             } else {
@@ -79,8 +88,50 @@ const Player = () => {
         }
     }, [accessToken, currentTrack]);
 
+    const cleanLyrics = (lyrics) => {
+        const unwantedText = "\n...\n\n******* This Lyrics is NOT for Commercial use *******";
+        let cleanedLyrics = lyrics.replace(unwantedText, '');
+    
+        cleanedLyrics = cleanedLyrics.replace(/\n/g, '<br/>');
+    
+        return cleanedLyrics;
+    };    
+
+    const fetchLyrics = async (trackName, artistName) => {
+        const encodedTrackName = encodeURIComponent(trackName);
+        const encodedArtistName = encodeURIComponent(artistName);
+        const url = `https://api.musixmatch.com/ws/1.1/matcher.lyrics.get?q_track=${encodedTrackName}&q_artist=${encodedArtistName}&apikey=${musixAPI}`;
+
+        // console.log(url);
+        
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Erreur API Musixmatch: ${response.status}`);
+            }
+            const data = await response.json();
+            if (data.message.body && data.message.body.lyrics) {
+                const cleanedLyrics = cleanLyrics(data.message.body.lyrics.lyrics_body);
+                setLyrics(cleanedLyrics);
+            } else {
+                setLyrics('Aucune parole trouvée.');
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération des paroles :", error);
+            setLyrics('Erreur lors de la récupération des paroles.');
+        }
+    };    
+    
+    useEffect(() => {
+        if (currentTrack) {
+            fetchLyrics(currentTrack.name, currentTrack.artists[0].name);
+        }
+    }, [currentTrack]);    
+
+    const playerWrapperClass = isExpanded ? "player-wrapper expanded" : "player-wrapper";
+
     return (
-        <div className="player-wrapper">
+        <div className={playerWrapperClass} onClick={toggleExpansion}>
             <div className="player-container">
                 <div className="player-infos">
                     {currentTrack && (
@@ -94,7 +145,7 @@ const Player = () => {
                     )}
                 </div>
                 <button onClick={() => controlPlayback(isPlaying ? 'pause' : 'play')}>
-                    {isPlaying ? 'Pause' : 'Play'}
+                    {isPlaying ? <img src={Pause} alt="Pause" /> : <img src={Play} alt="Play" />}
                 </button>
             </div>
             <div className="progress-container">
@@ -103,6 +154,10 @@ const Player = () => {
                     <span>{formatTime(progressMs)}</span>
                     <span>{calculateRemainingTime()}</span>
                 </div>
+            </div>
+            <div className="parole-container">
+                <p>Paroles</p>
+                <div dangerouslySetInnerHTML={{ __html: lyrics }} />
             </div>
         </div>
     );

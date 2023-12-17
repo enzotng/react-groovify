@@ -5,8 +5,10 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
-  
   const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken") || null);
+  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+  const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
+  const musixAPI = import.meta.env.VITE_MUSIXMATCH_API_KEY;
 
   useEffect(() => {
     if (accessToken) {
@@ -16,15 +18,13 @@ export const UserProvider = ({ children }) => {
     }
   }, [accessToken]);
 
-  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-  const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
-
   return (
     <UserContext.Provider value={{ 
       userProfile, setUserProfile, 
       accessToken, setAccessToken,
       clientId,
       clientSecret,
+      musixAPI,
     }}>
       {children}
     </UserContext.Provider>

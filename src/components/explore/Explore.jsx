@@ -1,27 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { useUserContext } from '../config/UserContext';
 import PlayButton from "../../assets/icon/play.svg";
 import "./Explore.scss";
 
 const Explore = () => {
+  const { clientId, clientSecret } = useUserContext();
   const [recherche, setRecherche] = useState("");
   const [artistes, setArtistes] = useState([]);
   const [titres, setTitres] = useState([]);
   const [albums, setAlbums] = useState([]);
-  const [idDelai, setIdDelai] = useState(null);
-  const clientId = "5b3a9581c276435d901439ef12ed7fea";
-  const clientSecret = "f59b7f4d04394c2ab79b8a19d34cb72e";
-
+  const [genres, setGenres] = useState([]);
   const [ongletActif, setOngletActif] = useState("titres");
-  const [idArtisteSelectionne] = useState(null);
+  const [idArtisteSelectionne, setIdArtisteSelectionne] = useState(null);
 
-  async function obtenirJetonAcces() {
+  const obtenirJetonAcces = useCallback(async () => {
     try {
       const reponse = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: "Basic " + btoa(clientId + ":" + clientSecret),
+          Authorization: "Basic " + btoa(`${clientId}:${clientSecret}`),
         },
         body: "grant_type=client_credentials",
       });
@@ -31,9 +30,9 @@ const Explore = () => {
       console.error("Erreur :", erreur);
       throw erreur;
     }
-  }
+  }, [clientId, clientSecret]);
 
-  async function chercherSurSpotify(jetonAcces) {
+  const chercherSurSpotify = useCallback(async (jetonAcces) => {
     try {
       const reponse = await fetch(
         `https://api.spotify.com/v1/search?q=${recherche}&type=track,album,artist`,
@@ -51,7 +50,7 @@ const Explore = () => {
       console.error("Erreur :", erreur);
       throw erreur;
     }
-  }
+  }, [recherche]);
 
   async function obtenirAlbumsArtiste(idArtiste, jetonAcces) {
     try {
@@ -105,7 +104,7 @@ const Explore = () => {
 
       chercherAlbums();
     }
-  }, [idArtisteSelectionne]);
+  }, [idArtisteSelectionne, obtenirJetonAcces]);
 
   const artistesVus = {};
   const artistesUniques = artistes.filter((artiste) => {
@@ -117,7 +116,11 @@ const Explore = () => {
     return true;
   });
 
-  const [genres, setGenres] = useState([]);
+  useEffect(() => {
+    obtenirJetonAcces().then(jetonAcces => {
+      obtenirGenres(jetonAcces);
+    });
+  }, [obtenirJetonAcces]);
 
   async function obtenirGenres(jetonAcces) {
     try {
@@ -144,37 +147,6 @@ const Explore = () => {
 
     chercherGenres();
   }, []);
-
-  // function melanger(tableau) {
-  //   let indiceActuel = tableau.length,
-  //     indiceAleatoire;
-
-  //   while (indiceActuel !== 0) {
-  //     indiceAleatoire = Math.floor(Math.random() * indiceActuel);
-  //     indiceActuel--;
-  //     [tableau[indiceActuel], tableau[indiceAleatoire]] = [
-  //       tableau[indiceAleatoire],
-  //       tableau[indiceActuel],
-  //     ];
-  //   }
-
-  //   return tableau;
-  // }
-
-  // const gradients = melanger([
-  //   "linear-gradient(45deg, rgba(126, 139, 252, 1), rgba(23, 26, 32, 1))",
-  //   "linear-gradient(45deg, rgba(113, 128, 242, 1), rgba(20, 23, 30, 1))",
-  //   "linear-gradient(45deg, rgba(139, 152, 262, 1), rgba(26, 29, 35, 1))",
-  //   "linear-gradient(45deg, rgba(120, 133, 247, 1), rgba(22, 25, 31, 1))",
-  //   "linear-gradient(45deg, rgba(134, 147, 257, 1), rgba(25, 28, 34, 1))",
-  //   "linear-gradient(45deg, rgba(129, 142, 252, 1), rgba(24, 27, 33, 1))",
-  //   "linear-gradient(45deg, rgba(141, 154, 264, 1), rgba(27, 30, 36, 1))",
-  //   "linear-gradient(45deg, rgba(118, 131, 245, 1), rgba(21, 24, 29, 1))",
-  // ]);
-
-  // function obtenirGradientAleatoire(indice) {
-  //   return gradients[indice % gradients.length];
-  // }
 
   return (
     <main>

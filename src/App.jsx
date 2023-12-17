@@ -31,7 +31,7 @@ const Content = () => {
         <Route path="/artiste/:id" element={<ProtectedRoute><Artiste /></ProtectedRoute>} />
         <Route path="/callback" element={<Auth />} />
       </Routes>
-      <Player />
+      {token && <Player />}
       {token && <NavFooter />}
     </>
   );

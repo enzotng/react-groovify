@@ -12,7 +12,8 @@ const scopes = [
   "playlist-read-private",
   "user-read-currently-playing",
   "user-read-playback-state",
-  "user-read-recently-played"
+  "user-read-recently-played",
+  "user-modify-playback-state"
 ];
 
 const Auth = () => {

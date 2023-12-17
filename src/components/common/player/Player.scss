@@ -9,7 +9,7 @@
   align-items: center;
   margin: 0 auto;
   background-color: rgba(11, 9, 28, 0.5);
-  border-radius: 20px;
+  border-radius: 10px;
   border: 1px solid var(--secondary-purple);
   box-shadow: 0px 1px 2px 0px rgb(11, 9, 28);
   backdrop-filter: blur(5px);
@@ -54,13 +54,22 @@
       }
     }
     button {
-      width: fit-content;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      aspect-ratio: 1/1;
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 20px;
+      border-radius: 50%;
       border: none;
-      padding: 10px;
       font-family: var(--primary-font);
       color: var(--primary-white);
+      img {
+        width: 17.5px;
+        height: 17.5px;
+        aspect-ratio: 1/1;
+      }
     }
   }
   .progress-container {
@@ -68,13 +77,12 @@
     height: 30px;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 12px;
-    overflow: hidden;
     position: relative;
     .progress {
       background-color: var(--secondary-purple);
-      height: 100%;
+      height: 30px;
+      border-radius: 12px;
     }
-
     .time-info {
       position: absolute;
       width: 100%;
@@ -90,6 +98,63 @@
       span:nth-child(2){
         right: 10px;
       }
+    }
+  }
+  .parole-container {
+    display: none;
+  }
+}
+
+.player-wrapper.expanded {
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  padding: 20px;
+  bottom: initial;
+  border: none;
+  border-radius: 0px;
+  overflow-y: auto;
+  gap: 30px;
+  .player-container {
+    flex-direction: column;
+    gap: 30px;
+    .player-infos {
+      flex-direction: column;
+      gap: 30px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      .player-content {
+        text-align: center;
+        p {
+          font-size: 0.9rem;
+          width: 100%;
+        }
+      }
+    }
+  }
+  .progress-container {
+    height: 30px;
+    .progress {
+      height: 30px;
+    }
+  }
+  .parole-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    gap: 10px;
+    background-color: rgba(11, 9, 28, 1);
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    p {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    div {
+      opacity: 0.75;
     }
   }
 }
