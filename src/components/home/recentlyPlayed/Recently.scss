@@ -6,9 +6,11 @@
   .grid-item {
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(30, 30, 35, 0.35);
     gap: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 5px;
     img,
     .squelette-image {

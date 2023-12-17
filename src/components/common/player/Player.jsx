@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUserContext } from '../../config/UserContext';
+import ColorThief from 'colorthief';
 import Play from '../../../assets/icon/play.svg';
 import Pause from '../../../assets/icon/pause.svg';
 import Previous from '../../../assets/icon/previous.svg';
@@ -17,11 +18,29 @@ const Player = () => {
 
     const [isExpanded, setIsExpanded] = useState(false);
 
+    const [backgroundColor, setBackgroundColor] = useState('rgba(11, 9, 28, 1)');
+    const [backgroundColor2, setBackgroundColor2] = useState('rgba(11, 9, 28, 1)');
+
     const toggleExpansion = () => {
         setIsExpanded(!isExpanded);
     };
 
-    // console.log("Access Token:", accessToken);
+    useEffect(() => {
+        if (currentTrack) {
+            fetchLyrics(currentTrack.name, currentTrack.artists[0].name);
+
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.src = currentTrack?.album?.images[0]?.url;
+
+            img.onload = () => {
+                const colorThief = new ColorThief();
+                const dominantColor = colorThief.getColor(img);
+                setBackgroundColor(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 0.3)`);
+                setBackgroundColor2(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 0.75)`);
+            };
+        }
+    }, [currentTrack]);
 
     const getCurrentTrack = async () => {
         try {
@@ -86,22 +105,21 @@ const Player = () => {
         const endpoint = {
             play: 'https://api.spotify.com/v1/me/player/play',
             pause: 'https://api.spotify.com/v1/me/player/pause',
-            next: 'https://api.spotify.com/v1/me/player/next',
-            previous: 'https://api.spotify.com/v1/me/player/previous'
+            next: 'https://api.spotify.com/v1/me/player/next'
         }[action];
 
         try {
-            const method = (action === 'next' || action === 'previous') ? 'POST' : 'PUT';
+            const method = action === 'next' ? 'POST' : 'PUT';
 
             await fetch(endpoint, {
                 method: method,
                 headers: {
                     Authorization: "Bearer " + accessToken,
                 },
-                body: (action === 'play' || action === 'pause') ? JSON.stringify({}) : null
+                body: action === 'next' ? null : JSON.stringify({})
             });
 
-            if (action === 'play' || action === 'next' || action === 'previous') setIsPlaying(true);
+            if (action === 'play' || action === 'next') setIsPlaying(true);
             if (action === 'pause') setIsPlaying(false);
             getCurrentTrack();
         } catch (error) {
@@ -115,6 +133,8 @@ const Player = () => {
             getLastPlayedTrack();
         }
     }, [accessToken, currentTrack]);
+
+    console.log(currentTrack);
 
     const cleanLyrics = (lyrics) => {
         const unwantedText = "\n...\n\n******* This Lyrics is NOT for Commercial use *******";
@@ -157,37 +177,39 @@ const Player = () => {
     const playerWrapperClass = isExpanded ? "player-wrapper expanded" : "player-wrapper";
 
     return (
-        <div className={playerWrapperClass} onClick={toggleExpansion}>
+        <div className={playerWrapperClass} onClick={toggleExpansion} style={{ backgroundColor: backgroundColor }}>
             <div className="player-container">
                 <div className="player-infos">
                     {currentTrack || lastPlayedTrack ? (
                         <>
-                            <img src={(currentTrack || lastPlayedTrack).album.images[0].url} alt={(currentTrack || lastPlayedTrack).name} />
+                            <img src={(currentTrack || lastPlayedTrack)?.album?.images[0]?.url} alt={(currentTrack || lastPlayedTrack)?.name} />
                             <div className="player-content">
-                                <p>{(currentTrack || lastPlayedTrack).name}</p>
-                                <p>{(currentTrack || lastPlayedTrack).artists.map(artist => artist.name).join(", ")}</p>
+                                <p>{(currentTrack || lastPlayedTrack)?.name}</p>
+                                <p>{(currentTrack || lastPlayedTrack)?.artists?.map(artist => artist.name).join(", ")}</p>
                             </div>
                         </>
                     ) : "Aucune piste sélectionnée"}
                 </div>
-                <button onClick={() => controlPlayback('previous')}>
-                    <img src={Previous} alt="Previous" />
-                </button>
-                <button onClick={() => controlPlayback(isPlaying ? 'pause' : 'play')}>
-                    {isPlaying ? <img src={Pause} alt="Pause" /> : <img src={Play} alt="Play" />}
-                </button>
-                <button onClick={() => controlPlayback('next')}>
-                    <img src={Next} alt="Next" />
-                </button>
+                <div className="bouton-wrapper">
+                    <button className="cta-bouton" onClick={() => controlPlayback('previous')}>
+                        <img src={Previous} alt="Previous" />
+                    </button>
+                    <button className="pauseplay-bouton" onClick={() => controlPlayback(isPlaying ? 'pause' : 'play')}>
+                        {isPlaying ? <img src={Pause} alt="Pause" /> : <img src={Play} alt="Play" />}
+                    </button>
+                    <button className="cta-bouton" onClick={() => controlPlayback('next')}>
+                        <img src={Next} alt="Next" />
+                    </button>
+                </div>
             </div>
             <div className="progress-container">
-                <div className="progress" style={{ width: `${(progressMs / durationMs) * 100}%` }}></div>
+                <div className="progress" style={{ width: `${(progressMs / durationMs) * 100}%`, backgroundColor: backgroundColor }}></div>
             </div>
             <div className="time-info">
                 <span>{formatTime(progressMs)}</span>
                 <span>{calculateRemainingTime()}</span>
             </div>
-            <div className="parole-container">
+            <div className="parole-container" style={{ backgroundColor: backgroundColor2 }}>
                 <p>Paroles</p>
                 <div dangerouslySetInnerHTML={{ __html: lyrics }} />
             </div>
