@@ -57,7 +57,6 @@ const Genre = () => {
                 className={loading ? "" : "swiper-fade"}
                 slidesPerView={2.25}
                 speed={1000}
-                loop={true}
                 grabCursor={true}
                 breakpoints={{
                     320: { slidesPerView: 2.25, spaceBetween: 15 },

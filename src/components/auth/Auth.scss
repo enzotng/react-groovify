@@ -23,11 +23,16 @@
     flex-direction: column;
     gap: 20px;
     p {
-      font-size: clamp(0.7rem, 0.5571rem + 0.7143vw, 1rem);
+      font-size: clamp(0.85rem, 0.5571rem + 0.7143vw, 1rem);
       font-style: italic;
     }
   }
-  ._3xrlJ {
+  button {
     font-family: var(--primary-font);
+    background-color: var(--primary-purple);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: var(--primary-white);
   }
 }

@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/swiper-bundle.css";
-import "../Swiper.scss";
+import "./Recently.scss";
 import { UserContext } from "../../config/UserContext";
 
 const Recently = () => {
@@ -38,38 +36,26 @@ const Recently = () => {
     }, [accessToken]);
 
     return (
-        <div className="slider-wrapper">
-            <Swiper
-                className={loading ? "" : "swiper-fade"}
-                slidesPerView={2.25}
-                speed={1000}
-                loop={true}
-                grabCursor={true}
-                breakpoints={{
-                    320: { slidesPerView: 2.25, spaceBetween: 15 },
-                    768: { slidesPerView: 5.25, spaceBetween: 25 },
-                }}
-            >
-                {loading ? (
-                    Array(5).fill(0).map((_, idx) => (
-                        <SwiperSlide key={idx}>
-                            <div className="squelette-image"></div>
+        <div className="grid-wrapper">
+            {loading ? (
+                Array(6).fill(0).map((_, idx) => (
+                    <div key={idx} className="grid-item">
+                        <div className="squelette-image"></div>
+                        <div className="grid-item-content">
                             <div className="squelette-text"></div>
-                            <div className="squelette-text-second"></div>
-                        </SwiperSlide>
-                    ))
-                ) : (
-                    recentTracks.map((track, index) => (
-                        <SwiperSlide key={index}>
-                            <img src={track.track.album.images[0]?.url} alt={track.track.name} />
-                            <div className="slider-wrapper-content">
-                                <p className="artiste-album">{track.track.name}</p>
-                                <p className="artiste-nom">{track.track.artists.map(artist => artist.name).join(", ")}</p>
-                            </div>
-                        </SwiperSlide>
-                    ))
-                )}
-            </Swiper>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                recentTracks.slice(0, 6).map((track, index) => (
+                    <div key={index} className="grid-item">
+                        <img src={track.track.album.images[0]?.url} alt={track.track.name} />
+                        <div className="grid-item-content">
+                            <p className="artiste-album">{track.track.name}</p>
+                        </div>
+                    </div>
+                ))
+            )}
         </div>
     );
 };

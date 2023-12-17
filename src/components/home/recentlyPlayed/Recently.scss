@@ -1,0 +1,58 @@
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  width: 100%;
+  .grid-item {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    img,
+    .squelette-image {
+      width: 45px;
+      height: 45px;
+      border-radius: 5px 0px 0px 5px;
+      object-fit: cover;
+    }
+    .grid-item-content {
+      .artiste-album {
+        word-break: break-word;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: bold;
+        line-height: 1.5;
+      }
+    }
+  }
+  .squelette-image,
+  .squelette-text {
+    background: linear-gradient(110deg, #ececec 8%, #dedede 18%, #ececec 33%);
+    background-size: 200% 100%;
+    animation: animationSquelette 1.5s infinite;
+  }
+
+  .squelette-image {
+    width: 45px;
+    height: 45px;
+    border-radius: 5px;
+  }
+
+  .squelette-text {
+    height: 0.75rem;
+    width: 70%;
+    border-radius: 5px;
+    margin: 5px 0;
+  }
+
+  @keyframes animationSquelette {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+}
