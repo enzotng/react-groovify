@@ -1,77 +1,82 @@
-import { useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../assets/icon/spotify.svg";
 import "./Auth.scss";
-
-import { SpotifyAuth, Scopes } from "react-spotify-auth";
-import "react-spotify-auth/dist/index.css";
-
-import { UserProvider } from "../config/UserContext";
 import { useUserContext } from "../config/UserContext";
 
-const clientId = "5b3a9581c276435d901439ef12ed7fea";
 const redirectUri = "http://localhost:5173/callback";
+const authEndpoint = "https://accounts.spotify.com/authorize";
+const scopes = [
+  "user-read-private",
+  "user-read-email",
+  "playlist-read-private",
+  "user-read-currently-playing",
+  "user-read-playback-state",
+  "user-read-recently-played"
+];
 
 const Auth = () => {
-  const [token, setToken] = useState(null);
-  const { setUserProfile } = useUserContext();
-
+  const { setUserProfile, setAccessToken, clientId } = useUserContext();
   const navigate = useNavigate();
 
-  const fetchUserProfile = async (accessToken) => {
+  const redirectToSpotifyLogin = () => {
+    window.location.href = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`;
+  };
+
+  const fetchUserProfile = async (token) => {
     try {
       const response = await fetch("https://api.spotify.com/v1/me", {
-        headers: {
-          Authorization: "Bearer " + accessToken,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await response.json();
-      data.accessToken = accessToken;
-      return data;
+      if (!response.ok) throw new Error("Erreur de réseau ou de token.");
+      return await response.json();
     } catch (error) {
-      console.error(
-        "Erreur lors de la récupération du profil utilisateur:",
-        error
-      );
+      console.error("Erreur lors de la récupération du profil utilisateur:", error);
+      return null;
     }
   };
 
+  useEffect(() => {
+    const getTokenFromUrl = () => {
+      const hash = window.location.hash;
+      if (!hash) return null;
+      const hashParams = new URLSearchParams(hash.substring(1));
+      return hashParams.get("access_token");
+    };
+
+    const tokenFromStorage = localStorage.getItem("accessToken");
+    const tokenFromUrl = getTokenFromUrl();
+
+    if (tokenFromUrl) {
+      localStorage.setItem("accessToken", tokenFromUrl);
+      setAccessToken(tokenFromUrl);
+      window.history.replaceState(null, null, ' ');
+    } else if (tokenFromStorage) {
+      setAccessToken(tokenFromStorage);
+    } else {
+      navigate("/");
+      return;
+    }
+
+    fetchUserProfile(tokenFromUrl || tokenFromStorage).then(userProfile => {
+      if (userProfile) {
+        setUserProfile({ ...userProfile, accessToken: tokenFromUrl || tokenFromStorage });
+        navigate("/home");
+      } else {
+        navigate("/");
+      }
+    });
+  }, [navigate, setAccessToken, setUserProfile]);
+
   return (
-    <UserProvider>
-      <div className="auth-container">
-        <img src={Logo} alt="Logo" />
-        <div className="auth-container-wrapper">
-          <h1>Spotify account</h1>
-          <p>To use our Groovify App, you need to login to your account</p>
-        </div>
-        {token ? (
-          <div>
-            <p>Successfully connected! Welcome!</p>
-            <p>Your access token is: {token}</p>
-          </div>
-        ) : (
-          <SpotifyAuth
-            redirectUri={redirectUri}
-            clientID={clientId}
-            scopes={[
-              Scopes.userReadPrivate,
-              Scopes.userReadEmail,
-              Scopes.playlistReadPrivate,
-            ]}
-            onAccessToken={async (token) => {
-              try {
-                setToken(token);
-                const userProfile = await fetchUserProfile(token);
-                setUserProfile(userProfile);
-                navigate("/home");
-              } catch (error) {
-                console.error("Erreur:", error);
-              }
-            }}
-          />
-        )}
+    <div className="auth-container">
+      <img src={Logo} alt="Logo Spotify" />
+      <div className="auth-container-wrapper">
+        <h1>Connectez-vous à votre compte Spotify</h1>
+        <p>Pour utiliser notre application Groovify, vous devez vous connecter avec votre compte Spotify.</p>
+        <button onClick={redirectToSpotifyLogin}>Se connecter à Spotify</button>
       </div>
-    </UserProvider>
+    </div>
   );
 };
 

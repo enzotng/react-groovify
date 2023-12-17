@@ -1,6 +1,6 @@
 import Latest from "./latestReleases/Latest";
 import Genre from "./genre/Genre";
-// import Recently from "./recentlyPlayed/Recently";
+import Recently from "./recentlyPlayed/Recently";
 import NavHome from "./NavHome";
 
 import "./Home.scss";
@@ -14,16 +14,16 @@ const Home = () => {
           <section className="c-section">
             <article className="c-article">
               <h1>Recently played</h1>
-              {/* <Recently /> */}
-              <Latest />
+              <Recently />
+              {/* <Latest /> */}
             </article>
             <article className="c-article">
-            <h1>Latest releases</h1>
+              <h1>Latest releases</h1>
               <Latest />
             </article>
 
             <article className="c-article">
-              <h1>Musics genre</h1>
+              <h1>Music genre</h1>
               <Genre />
             </article>
 

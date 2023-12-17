@@ -1,108 +1,92 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import "../Swiper.scss";
+import { UserContext } from "../../config/UserContext";
 
-function Main() {
+const Latest = () => {
   const [newReleases, setNewReleases] = useState([]);
-
-  const clientId = "5b3a9581c276435d901439ef12ed7fea";
-  const clientSecret = "f59b7f4d04394c2ab79b8a19d34cb72e";
-
   const [loading, setLoading] = useState(true);
+  const { clientId, clientSecret } = useContext(UserContext);
 
   useEffect(() => {
-    async function getAccessToken() {
-      try {
-        const response = await fetch("https://accounts.spotify.com/api/token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: "Basic " + btoa(clientId + ":" + clientSecret),
-          },
-          body: "grant_type=client_credentials",
-        });
+    const getAccessToken = async () => {
+      const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+        },
+        body: "grant_type=client_credentials",
+      });
 
-        const data = await response.json();
-        return data.access_token;
-      } catch (error) {
-        console.error("Erreur :", error);
-        throw error;
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération du token");
       }
-    }
 
-    async function getNewReleases(accessToken) {
-      try {
-        const response = await fetch(
-          "https://api.spotify.com/v1/browse/new-releases",
-          {
-            headers: {
-              Authorization: "Bearer " + accessToken,
-            },
-          }
-        );
+      return (await response.json()).access_token;
+    };
 
-        const data = await response.json();
-        return data.albums.items;
-      } catch (error) {
-        console.error("Erreur :", error);
-        throw error;
+    const getNewReleases = async (accessToken) => {
+      const response = await fetch("https://api.spotify.com/v1/browse/new-releases", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des nouvelles sorties");
       }
-    }
 
-    (async () => {
+      return (await response.json()).albums.items;
+    };
+
+    const fetchNewReleases = async () => {
       try {
         const accessToken = await getAccessToken();
-        const newReleases = await getNewReleases(accessToken);
-        setNewReleases(newReleases);
-        setTimeout(() => setLoading(false), 2000);
+        const releases = await getNewReleases(accessToken);
+        setNewReleases(releases);
       } catch (error) {
         console.error("Erreur :", error);
+      } finally {
         setLoading(false);
       }
-    })();
-  }, []);
+    };
+
+    fetchNewReleases();
+  }, [clientId]);
 
   return (
     <div className="slider-wrapper">
-      <Swiper className={loading ? "" : "swiper-fade"}
+      <Swiper
+        className={loading ? "" : "swiper-fade"}
         slidesPerView={2.25}
         speed={1000}
         loop={true}
         grabCursor={true}
         breakpoints={{
-          320: {
-            slidesPerView: 2.25,
-            spaceBetween: 15,
-          },
-          768: {
-            slidesPerView: 5.25,
-            spaceBetween: 25,
-          },
+          320: { slidesPerView: 2.25, spaceBetween: 15 },
+          768: { slidesPerView: 5.25, spaceBetween: 25 },
         }}
       >
         {loading
-          ? Array(5)
-              .fill(0)
-              .map((_, idx) => (
-                <SwiperSlide key={idx}>
-                  <div className="squelette-image"></div>
-                  <div className="squelette-text"></div>
-                  <div className="squelette-text-second"></div>
-                </SwiperSlide>
-              ))
+          ? Array(5).fill(0).map((_, idx) => (
+              <SwiperSlide key={idx}>
+                <div className="squelette-image"></div>
+              </SwiperSlide>
+            ))
           : newReleases.map((album, index) => (
               <SwiperSlide key={index}>
-                <img src={album.images[0].url} alt="" />
+                <img src={album.images[0]?.url} alt={album.name} />
                 <div className="slider-wrapper-content">
                   <p className="artiste-album">{album.name}</p>
-                  <p className="artiste-nom">{album.artists[0].name}</p>
+                  <p className="artiste-nom">{album.artists[0]?.name}</p>
                 </div>
               </SwiperSlide>
             ))}
       </Swiper>
     </div>
   );
-}
+};
 
-export default Main;
+export default Latest;

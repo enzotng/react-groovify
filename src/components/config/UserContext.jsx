@@ -1,50 +1,31 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Cookies from 'js-cookie';
 
-const UserContext = createContext();
+export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [userProfile, setUserProfile] = useState(
-    JSON.parse(Cookies.get('userProfile') || 'null')
-  );
-  const [playlists, setPlaylists] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
   
-  useEffect(() => {
-    Cookies.set('userProfile', JSON.stringify(userProfile));
-  }, [userProfile]);
+  const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken") || null);
 
-  const fetchPlaylists = async (retries = 3) => {
-    try {
-      const response = await fetch('https://api.spotify.com/v1/me/playlists', {
-        headers: {
-          Authorization: `Bearer ${userProfile.accessToken}`,
-        },        
-      });
-  
-      // Rate limiting error handling
-      if (response.status === 429 && retries > 0) {
-        const retryAfter = response.headers.get("Retry-After") || 5; // Default to 5 seconds if header not present
-        setTimeout(() => fetchPlaylists(retries - 1), retryAfter * 1000); // Convert to milliseconds
-        return;
-      }
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Erreur lors de la récupération des playlists:', errorData);
-        return;
-      }
-  
-      const data = await response.json();
-      setPlaylists(data.items);
-    } catch (error) {
-      console.error('Erreur lors de la récupération des playlists:', error);
+  useEffect(() => {
+    if (accessToken) {
+      localStorage.setItem("accessToken", accessToken);
+    } else {
+      localStorage.removeItem("accessToken");
     }
-  };
-  
+  }, [accessToken]);
+
+  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+  const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
 
   return (
-    <UserContext.Provider value={{ userProfile, setUserProfile, playlists, fetchPlaylists }}>
+    <UserContext.Provider value={{ 
+      userProfile, setUserProfile, 
+      accessToken, setAccessToken,
+      clientId,
+      clientSecret,
+    }}>
       {children}
     </UserContext.Provider>
   );
@@ -57,3 +38,5 @@ UserProvider.propTypes = {
 export const useUserContext = () => {
   return useContext(UserContext);
 };
+
+export default UserProvider;

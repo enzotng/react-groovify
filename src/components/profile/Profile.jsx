@@ -1,4 +1,4 @@
-import { Link, Routes, Route, useOutlet, useLocation } from "react-router-dom";
+import { Link, Routes, Route, useOutlet, useLocation, useNavigate } from "react-router-dom";
 import { useUserContext } from "../config/UserContext";
 
 import Dashboard from "./dashboard/Dashboard";
@@ -12,23 +12,24 @@ import "./Profile.scss";
 
 const Profile = () => {
   const { userProfile } = useUserContext();
+  const { setUserProfile, setAccessToken } = useUserContext();
+  const navigate = useNavigate();
 
-  // console.log(userProfile);
-<<<<<<< HEAD
-
-  const [isDarkMode, setIsDarkMode] = useState(false);
-=======
->>>>>>> 67e2c8d712ef7a1c3593a10c388f1378a4e5fad1
+  const handleLogout = () => {
+    setUserProfile(null);
+    window.localStorage.removeItem("accessToken");
+    navigate("/");
+  };
 
   const outlet = useOutlet();
 
   const location = useLocation();
 
-  const isSubPage = location.pathname.includes("dashboard") || 
-                    location.pathname.includes("notification") ||
-                    location.pathname.includes("audio") ||
-                    location.pathname.includes("security") ||
-                    location.pathname.includes("language");
+  const isSubPage = location.pathname.includes("dashboard") ||
+    location.pathname.includes("notification") ||
+    location.pathname.includes("audio") ||
+    location.pathname.includes("security") ||
+    location.pathname.includes("language");
 
   if (!userProfile) {
     return <p>Loading profile...</p>;
@@ -95,8 +96,9 @@ const Profile = () => {
                   </Link>
                 </li>
               </ul>
-              <ToggleSwitch/>
+              <ToggleSwitch />
             </div>
+            <button onClick={handleLogout}>Se déconnecter</button>
           </div>
         </div>
       )}

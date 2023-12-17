@@ -1,93 +1,75 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import "../Swiper.scss";
+import { UserContext } from "../../config/UserContext";
 
-function Genre() {
+const Genre = () => {
     const [genres, setGenres] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const clientId = "5b3a9581c276435d901439ef12ed7fea";
-    const clientSecret = "f59b7f4d04394c2ab79b8a19d34cb72e";
+    const [error, setError] = useState(null);
+    const { accessToken } = useContext(UserContext);
 
     useEffect(() => {
-        async function getAccessToken() {
-            try {
-                const response = await fetch("https://accounts.spotify.com/api/token", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        Authorization: "Basic " + btoa(clientId + ":" + clientSecret),
-                    },
-                    body: "grant_type=client_credentials",
-                });
-
-                const data = await response.json();
-                return data.access_token;
-            } catch (error) {
-                console.error("Erreur :", error);
-                throw error;
+        const getAvailableGenres = async () => {
+            if (!accessToken) {
+                setError("Token d'accès non disponible.");
+                setLoading(false);
+                return;
             }
-        }
 
-        async function getAvailableGenres(accessToken) {
             try {
                 const response = await fetch(
                     "https://api.spotify.com/v1/recommendations/available-genre-seeds",
-                    {
-                        headers: {
-                            Authorization: "Bearer " + accessToken,
-                        },
-                    }
+                    { headers: { Authorization: `Bearer ${accessToken}` } }
                 );
 
-                const data = await response.json();
-                return data.genres;
-            } catch (error) {
-                console.error("Erreur :", error);
-                throw error;
-            }
-        }
+                if (response.status === 429) {
+                    const retryAfter = response.headers.get("Retry-After") || 30;
+                    setTimeout(getAvailableGenres, retryAfter * 1000);
+                    return;
+                }
 
-        (async () => {
-            try {
-                const accessToken = await getAccessToken();
-                const availableGenres = await getAvailableGenres(accessToken);
-                setGenres(availableGenres);
-                setTimeout(() => setLoading(false), 2000);
+                if (!response.ok) {
+                    throw new Error(`Erreur de réponse : ${response.status}`);
+                }
+
+                const data = await response.json();
+                setGenres(data.genres);
             } catch (error) {
                 console.error("Erreur :", error);
+                setError(error);
+            } finally {
                 setLoading(false);
             }
-        })();
-    }, []);
+        };
+
+        getAvailableGenres();
+    }, [accessToken]);
+
+    if (error) {
+        return <div>Erreur de chargement des genres : {error.message || error}</div>;
+    }
 
     return (
         <div className="slider-wrapper">
-            <Swiper className={loading ? "" : "swiper-fade"}
+            <Swiper
+                className={loading ? "" : "swiper-fade"}
                 slidesPerView={2.25}
                 speed={1000}
                 loop={true}
                 grabCursor={true}
                 breakpoints={{
-                    320: {
-                        slidesPerView: 2.25,
-                        spaceBetween: 15,
-                    },
-                    768: {
-                        slidesPerView: 5.25,
-                        spaceBetween: 25,
-                    },
+                    320: { slidesPerView: 2.25, spaceBetween: 15 },
+                    768: { slidesPerView: 5.25, spaceBetween: 25 },
                 }}
             >
                 {loading
-                    ? Array(5)
-                        .fill(0)
-                        .map((_, idx) => (
-                            <SwiperSlide key={idx}>
-                                <div className="squelette-image"></div>
-                            </SwiperSlide>
-                        ))
+                    ? Array(5).fill(0).map((_, idx) => (
+                        <SwiperSlide key={idx}>
+                            <div className="squelette-image"></div>
+                        </SwiperSlide>
+                    ))
                     : genres.map((genre, index) => (
                         <SwiperSlide key={index}>
                             <p className="genre">{genre}</p>
@@ -96,6 +78,6 @@ function Genre() {
             </Swiper>
         </div>
     );
-}
+};
 
 export default Genre;

@@ -1,17 +1,38 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUserContext } from "../config/UserContext";
 import './Library.scss';
 
 const Library = () => {
-  const { userProfile, playlists, fetchPlaylists } = useUserContext();  
+  const { userProfile } = useUserContext();
+  const [playlists, setPlaylists] = useState(null);
+
+  const fetchPlaylists = async () => {
+    if (!userProfile || !userProfile.accessToken) {
+      console.log("AccessToken not found. User needs to login.");
+      return;
+    }
+
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me/playlists', {
+        headers: {
+          Authorization: `Bearer ${userProfile.accessToken}`,
+        },        
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch playlists');
+      }
+  
+      const data = await response.json();
+      setPlaylists(data.items);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des playlists:', error);
+    }
+  };
 
   useEffect(() => {
-    if (userProfile && userProfile.accessToken) {
-      fetchPlaylists();
-    } else {
-      // Rediriger vers la page d'authentification ou gérer l'erreur
-    }
-  }, [fetchPlaylists, userProfile]);
+    fetchPlaylists();
+  }, [userProfile]);
 
   if (!playlists) {
     return <main>Loading...</main>;
