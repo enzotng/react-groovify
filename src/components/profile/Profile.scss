@@ -166,17 +166,16 @@
             }
           }
         }
-
-        
       }
     }
     button {
       width: fit-content;
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 20px;
+      border-radius: 16px;
       border: none;
-      padding: 15px;
+      padding: 12px;
       font-family: var(--primary-font);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       color: var(--primary-white);
     }
   }

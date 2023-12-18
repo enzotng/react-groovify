@@ -1,5 +1,6 @@
 import Latest from "./latestReleases/Latest";
-import Genre from "./genre/Genre";
+import TopItems from "./topItems/TopItems";
+import TopHits from "./topHits/TopHits";
 import Recently from "./recentlyPlayed/Recently";
 import NavHome from "./NavHome";
 
@@ -23,12 +24,12 @@ const Home = () => {
             </article>
 
             <article className="c-article">
-              <h1>Music genre</h1>
-              <Genre />
+              <h1>Current Favorites</h1>
+              <TopItems />
             </article>
-
             <article className="c-article">
               <h1>Top charts</h1>
+              <TopHits/>
             </article>
           </section>
         </div>

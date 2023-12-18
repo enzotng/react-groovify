@@ -6,18 +6,19 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
-  // const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-  // const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
-  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID_2;
-  const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET_2;
+  const [currentTrack, setCurrentTrack] = useState(null);
+  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+  const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
+  // const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID_2;
+  // const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET_2;
   const musixAPI = import.meta.env.VITE_MUSIXMATCH_API_KEY;
 
-  // useEffect(() => {
-  //   console.log("AccessToken mis à jour dans UserContext:", accessToken);
-  // }, [accessToken]);
+  const setTrackToPlay = (track) => {
+    setCurrentTrack(track);
+  };
 
   return (
-    <UserContext.Provider value={{ userProfile, setUserProfile, accessToken, setAccessToken, clientId, clientSecret, musixAPI }}>
+    <UserContext.Provider value={{ userProfile, setUserProfile, accessToken, setAccessToken, clientId, clientSecret, musixAPI, currentTrack, setTrackToPlay }}>
       {children}
     </UserContext.Provider>
   );

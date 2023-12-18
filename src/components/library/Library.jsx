@@ -34,8 +34,11 @@ const Library = () => {
   };
 
   useEffect(() => {
-    fetchPlaylists();
-  }, [userProfile]);
+    console.log("Library component mounted");
+    if (userProfile && userProfile.accessToken) {
+      fetchPlaylists();
+    }
+  }, [userProfile]);  
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value.toLowerCase());

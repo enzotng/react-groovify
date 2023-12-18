@@ -17,6 +17,8 @@
 
   --primary-purple: #444492;
   --secondary-purple: rgba(68, 68, 146, 0.5);
+  
+  --primary-spotify: rgba(29, 185, 84, 1);
 
   --primary-font: "Fira Sans", sans-serif;
 }
@@ -69,7 +71,9 @@ main {
   width: 100%;
   align-self: stretch;
   flex-direction: column;
-  margin-bottom: 52px;
+  min-height: calc(100vh - 52px);
+  min-height: calc(100dvh - 52px);
+  margin-bottom: 145px;
   .heading-wrapper {
     display: flex;
     width: 100%;

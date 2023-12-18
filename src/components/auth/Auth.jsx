@@ -8,12 +8,12 @@ const Auth = () => {
   const { setUserProfile, setAccessToken, clientId } = useUserContext();
   const navigate = useNavigate();
 
-  // Constantes pour l'authentification
   const authEndpoint = 'https://accounts.spotify.com/authorize';
   const redirectUri = 'http://localhost:3001/callback';
   const scopes = [
     'user-read-private',
     'user-read-email',
+    'user-top-read',
     'playlist-read-private',
     'user-read-currently-playing',
     'user-read-playback-state',
@@ -21,20 +21,16 @@ const Auth = () => {
     'user-modify-playback-state',
   ];
 
-  // Redirection vers Spotify pour l'authentification
   const redirectToSpotifyLogin = () => {
     const scopeString = scopes.join('%20');
     window.location.href = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopeString}&response_type=token&show_dialog=true`;
   };
 
-  // Récupération du token depuis l'URL
   const getTokenFromUrl = () => {
-    console.log("URL actuelle:", window.location.href);
     const hash = window.location.hash;
     return hash ? new URLSearchParams(hash.substring(1)).get('access_token') : null;
   };
 
-  // Fetch du profil utilisateur
   const fetchUserProfile = async (token) => {
     try {
       const response = await fetch('https://api.spotify.com/v1/me', {
@@ -46,42 +42,38 @@ const Auth = () => {
         mode: 'cors'
       });
 
-      if (response.ok) {
-        return await response.json();
-      } else {
+      if (!response.ok) {
+        console.error('Error fetching user profile: Response not ok');
         throw new Error('Network or token error');
       }
+
+      return await response.json();
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      return null;
+      navigate('/');
+      setAccessToken(null);
+      setUserProfile(null);
     }
   };
 
-  // Initialisation de l'authentification
   useEffect(() => {
-    console.log("Composant Auth monté");
-    const token = getTokenFromUrl();
-    console.log("Token récupéré de l'URL:", token);
-
-    if (!token) {
-      console.log("Redirection vers la page de login car le token est absent.");
+    const existingToken = getTokenFromUrl();
+  
+    if (!existingToken) {
       navigate('/');
       return;
     }
-
-    setAccessToken(token);
-    console.log("Token stocké dans UserContext:", token);
-
+  
+    setAccessToken(existingToken);
+  
     const initUserProfile = async () => {
-      const userProfile = await fetchUserProfile(token);
+      const userProfile = await fetchUserProfile(existingToken);
       if (userProfile) {
-        setUserProfile({ ...userProfile, accessToken: token });
+        setUserProfile({ ...userProfile, accessToken: existingToken });
         navigate('/home');
-      } else {
-        navigate('/');
       }
     };
-
+  
     initUserProfile();
   }, [navigate, setAccessToken, setUserProfile]);
 

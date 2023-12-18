@@ -5,7 +5,22 @@ import Play from '../../../assets/icon/play.svg';
 import Pause from '../../../assets/icon/pause.svg';
 import Previous from '../../../assets/icon/previous.svg';
 import Next from '../../../assets/icon/next.svg';
+import CloseBouton from '../../../assets/icon/c-vector-chevron.svg';
 import './Player.scss';
+
+
+const throttle = (func, limit) => {
+    let inThrottle;
+    return function () {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+};
 
 const Player = () => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -14,7 +29,7 @@ const Player = () => {
     const [progressMs, setProgressMs] = useState(0);
     const [durationMs, setDurationMs] = useState(0);
     const [lyrics, setLyrics] = useState('');
-    const { accessToken, musixAPI } = useUserContext();
+    const { accessToken, musixAPI, trackToPlay } = useUserContext();
     const [elapsedTime, setElapsedTime] = useState(0);
     const [intervalId, setIntervalId] = useState(null);
 
@@ -22,9 +37,56 @@ const Player = () => {
 
     const [backgroundColor, setBackgroundColor] = useState('rgba(11, 9, 28, 1)');
     const [backgroundColor2, setBackgroundColor2] = useState('rgba(11, 9, 28, 1)');
+    const boxShadowColor = backgroundColor.replace(/[^,]+(?=\))/, '1');
 
     const toggleExpansion = () => {
-        setIsExpanded(!isExpanded);
+        if (!isExpanded) {
+            setIsExpanded(true);
+        }
+    };
+
+    const throttledGetCurrentTrack = useCallback(throttle(getCurrentTrack, 2000), [accessToken]);
+    const throttledGetLastPlayedTrack = useCallback(throttle(getLastPlayedTrack, 2000), [accessToken]);
+    const throttledFetchLyrics = useCallback(throttle(fetchLyrics, 2000), [currentTrack]);
+
+    useEffect(() => {
+        if (trackToPlay) {
+            console.log("trackToPlay in Player:", trackToPlay);
+            setCurrentTrack(trackToPlay);
+            playTrack(trackToPlay.id);
+        }
+    }, [trackToPlay]);
+
+    console.log(trackToPlay);
+
+    const playTrack = async (trackId) => {
+        console.log("Playing track with ID:", trackId);
+        if (!accessToken || !trackId) {
+            console.error("Token d'accès ou identifiant du morceau manquant.");
+            return;
+        }
+
+        try {
+            const response = await fetch('https://api.spotify.com/v1/me/player/play', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    uris: [`spotify:track:${trackId}`]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur API Spotify: ${response.status}`);
+            }
+
+            setIsPlaying(true);
+            console.log("Lecture de la piste commencée.");
+        } catch (error) {
+            console.error("Erreur lors de la lecture de la piste:", error);
+        }
     };
 
     useEffect(() => {
@@ -38,17 +100,30 @@ const Player = () => {
             img.onload = () => {
                 const colorThief = new ColorThief();
                 const dominantColor = colorThief.getColor(img);
-                setBackgroundColor(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 0.3)`);
-                setBackgroundColor2(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 0.75)`);
+                setBackgroundColor(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 0.4)`);
+                setBackgroundColor2(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 1)`);
             };
         }
     }, [currentTrack]);
+
+    useEffect(() => {
+        if (accessToken) {
+            throttledGetCurrentTrack();
+            throttledGetLastPlayedTrack();
+        }
+    }, [accessToken, currentTrack, throttledGetCurrentTrack, throttledGetLastPlayedTrack]);
+
+    useEffect(() => {
+        if (currentTrack) {
+            throttledFetchLyrics(currentTrack.name, currentTrack.artists[0].name);
+        }
+    }, [currentTrack, throttledFetchLyrics]);
 
     const getCurrentTrack = async () => {
         try {
             const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
                 method: 'GET',
-                headers: { 
+                headers: {
                     'Authorization': "Bearer " + accessToken,
                     'Content-Type': 'application/json'
                 },
@@ -177,7 +252,14 @@ const Player = () => {
     const startTimer = () => {
         if (!intervalId) {
             const id = setInterval(() => {
-                setElapsedTime((prev) => prev + 1000);
+                setElapsedTime((prev) => {
+                    if (prev < durationMs) {
+                        return prev + 1000;
+                    } else {
+                        clearInterval(id);
+                        return durationMs;
+                    }
+                });
             }, 1000);
             setIntervalId(id);
         }
@@ -203,9 +285,9 @@ const Player = () => {
     useEffect(() => {
         if (currentTrack) {
             setDurationMs(currentTrack.duration_ms);
-            setElapsedTime(0);
+            setElapsedTime(progressMs);
         }
-    }, [currentTrack]);
+    }, [currentTrack, progressMs]);
 
     const calculateRemainingTime = () => {
         const remainingMs = durationMs - elapsedTime;
@@ -216,11 +298,20 @@ const Player = () => {
 
     return (
         <div className={playerWrapperClass} onClick={toggleExpansion} style={{ backgroundColor: backgroundColor }}>
+            {isExpanded && (
+                <button className="close-bouton" onClick={() => setIsExpanded(false)}>
+                    <img src={CloseBouton} alt="Next" />
+                </button>
+            )}
             <div className="player-container">
                 <div className="player-infos">
                     {currentTrack || lastPlayedTrack ? (
                         <>
-                            <img src={(currentTrack || lastPlayedTrack)?.album?.images[0]?.url} alt={(currentTrack || lastPlayedTrack)?.name} />
+                            <img
+                                src={(currentTrack || lastPlayedTrack)?.album?.images[0]?.url}
+                                alt={(currentTrack || lastPlayedTrack)?.name}
+                                style={{ boxShadow: isExpanded ? `0px 12px 100px 0px ${boxShadowColor}` : 'none' }}
+                            />
                             <div className="player-content">
                                 <p>{(currentTrack || lastPlayedTrack)?.name}</p>
                                 <p>{(currentTrack || lastPlayedTrack)?.artists?.map(artist => artist.name).join(", ")}</p>
