@@ -8,20 +8,6 @@ import Next from '../../../assets/icon/next.svg';
 import CloseBouton from '../../../assets/icon/c-vector-chevron.svg';
 import './Player.scss';
 
-
-const throttle = (func, limit) => {
-    let inThrottle;
-    return function () {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            func.apply(context, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
-};
-
 const Player = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTrack, setCurrentTrack] = useState(null);
@@ -45,17 +31,13 @@ const Player = () => {
         }
     };
 
-    const throttledGetCurrentTrack = useCallback(throttle(getCurrentTrack, 2000), [accessToken]);
-    const throttledGetLastPlayedTrack = useCallback(throttle(getLastPlayedTrack, 2000), [accessToken]);
-    const throttledFetchLyrics = useCallback(throttle(fetchLyrics, 2000), [currentTrack]);
-
     useEffect(() => {
         if (trackToPlay) {
             console.log("trackToPlay in Player:", trackToPlay);
             setCurrentTrack(trackToPlay);
             playTrack(trackToPlay.id);
         }
-    }, [trackToPlay]);
+    }, [trackToPlay]);    
 
     console.log(trackToPlay);
 
@@ -65,7 +47,7 @@ const Player = () => {
             console.error("Token d'accès ou identifiant du morceau manquant.");
             return;
         }
-
+    
         try {
             const response = await fetch('https://api.spotify.com/v1/me/player/play', {
                 method: 'PUT',
@@ -77,17 +59,17 @@ const Player = () => {
                     uris: [`spotify:track:${trackId}`]
                 })
             });
-
+    
             if (!response.ok) {
                 throw new Error(`Erreur API Spotify: ${response.status}`);
             }
-
+    
             setIsPlaying(true);
             console.log("Lecture de la piste commencée.");
         } catch (error) {
             console.error("Erreur lors de la lecture de la piste:", error);
         }
-    };
+    };    
 
     useEffect(() => {
         if (currentTrack) {
@@ -105,19 +87,6 @@ const Player = () => {
             };
         }
     }, [currentTrack]);
-
-    useEffect(() => {
-        if (accessToken) {
-            throttledGetCurrentTrack();
-            throttledGetLastPlayedTrack();
-        }
-    }, [accessToken, currentTrack, throttledGetCurrentTrack, throttledGetLastPlayedTrack]);
-
-    useEffect(() => {
-        if (currentTrack) {
-            throttledFetchLyrics(currentTrack.name, currentTrack.artists[0].name);
-        }
-    }, [currentTrack, throttledFetchLyrics]);
 
     const getCurrentTrack = async () => {
         try {
@@ -278,7 +247,7 @@ const Player = () => {
         } else {
             stopTimer();
         }
-
+    
         return () => stopTimer();
     }, [isPlaying]);
 
@@ -311,7 +280,7 @@ const Player = () => {
                                 src={(currentTrack || lastPlayedTrack)?.album?.images[0]?.url}
                                 alt={(currentTrack || lastPlayedTrack)?.name}
                                 style={{ boxShadow: isExpanded ? `0px 12px 100px 0px ${boxShadowColor}` : 'none' }}
-                            />
+                            />                           
                             <div className="player-content">
                                 <p>{(currentTrack || lastPlayedTrack)?.name}</p>
                                 <p>{(currentTrack || lastPlayedTrack)?.artists?.map(artist => artist.name).join(", ")}</p>
