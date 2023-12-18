@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useUserContext } from "../config/UserContext";
+import Play from '../../assets/icon/play.svg';
 import './Library.scss';
 
 const Library = () => {
   const { userProfile } = useUserContext();
-  const [playlists, setPlaylists] = useState(null);
+  const [playlists, setPlaylists] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('default');
 
   const fetchPlaylists = async () => {
     if (!userProfile || !userProfile.accessToken) {
@@ -34,8 +37,27 @@ const Library = () => {
     fetchPlaylists();
   }, [userProfile]);
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value.toLowerCase());
+  };
+
+  const handleSortChange = (e) => {
+    setSortOrder(e.target.value);
+  };
+
+  const filteredPlaylists = playlists.length > 0
+    ? playlists
+        .filter(playlist => playlist.name.toLowerCase().includes(searchTerm))
+        .sort((a, b) => {
+          if (sortOrder === 'name') {
+            return a.name.localeCompare(b.name);
+          }
+          return 0;
+        })
+    : [];
+
   if (!playlists) {
-    return <main>Loading...</main>;
+    return <main>Loading playlists...</main>;
   }
 
   return (
@@ -54,11 +76,28 @@ const Library = () => {
           </svg>
           <h1>My library, {userProfile?.display_name}</h1>
         </div>
+        <div className="input-wrapper">
+          <input
+            type="text"
+            placeholder="Rechercher une playlist..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <select value={sortOrder} onChange={handleSortChange}>
+            <option value="default">Défaut</option>
+            <option value="name">Trier par nom</option>
+          </select>
+        </div>
         <div className="playlist-wrapper">
-          {playlists.map(playlist => (
+          {filteredPlaylists.map(playlist => (
             <div key={playlist.id} className="playlist-content">
-              <img src={playlist.images[0]?.url} alt={`${playlist.name} cover`} />
-              <p>{playlist.name}</p>
+              <div className="playlist-infos">
+                  <img src={playlist.images[0]?.url} alt={`${playlist.name} cover`} />
+                  <p>{playlist.name}</p>
+              </div>
+              <button className="cta-bouton">
+                <img src={Play} alt="Play" />
+              </button>
             </div>
           ))}
         </div>

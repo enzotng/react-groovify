@@ -15,6 +15,8 @@ const Player = () => {
     const [durationMs, setDurationMs] = useState(0);
     const [lyrics, setLyrics] = useState('');
     const { accessToken, musixAPI } = useUserContext();
+    const [elapsedTime, setElapsedTime] = useState(0);
+    const [intervalId, setIntervalId] = useState(null);
 
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -45,8 +47,14 @@ const Player = () => {
     const getCurrentTrack = async () => {
         try {
             const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
-                headers: { Authorization: "Bearer " + accessToken }
+                method: 'GET',
+                headers: { 
+                    'Authorization': "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
             });
+
 
             if (response.status === 204) {
                 setCurrentTrack(null);
@@ -96,11 +104,6 @@ const Player = () => {
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    const calculateRemainingTime = () => {
-        const remainingMs = durationMs - progressMs;
-        return "-" + formatTime(remainingMs);
-    };
-
     const controlPlayback = async (action) => {
         const endpoint = {
             play: 'https://api.spotify.com/v1/me/player/play',
@@ -134,8 +137,6 @@ const Player = () => {
         }
     }, [accessToken, currentTrack]);
 
-    console.log(currentTrack);
-
     const cleanLyrics = (lyrics) => {
         const unwantedText = "\n...\n\n******* This Lyrics is NOT for Commercial use *******";
         let cleanedLyrics = lyrics.replace(unwantedText, '');
@@ -149,7 +150,6 @@ const Player = () => {
         const encodedTrackName = encodeURIComponent(trackName);
         const encodedArtistName = encodeURIComponent(artistName);
         const url = `https://api.musixmatch.com/ws/1.1/matcher.lyrics.get?q_track=${encodedTrackName}&q_artist=${encodedArtistName}&apikey=${musixAPI}`;
-
         try {
             const response = await fetch(url);
             if (!response.ok) {
@@ -174,6 +174,44 @@ const Player = () => {
         }
     }, [currentTrack]);
 
+    const startTimer = () => {
+        if (!intervalId) {
+            const id = setInterval(() => {
+                setElapsedTime((prev) => prev + 1000);
+            }, 1000);
+            setIntervalId(id);
+        }
+    };
+
+    const stopTimer = () => {
+        if (intervalId) {
+            clearInterval(intervalId);
+            setIntervalId(null);
+        }
+    };
+
+    useEffect(() => {
+        if (isPlaying) {
+            startTimer();
+        } else {
+            stopTimer();
+        }
+
+        return () => stopTimer();
+    }, [isPlaying]);
+
+    useEffect(() => {
+        if (currentTrack) {
+            setDurationMs(currentTrack.duration_ms);
+            setElapsedTime(0);
+        }
+    }, [currentTrack]);
+
+    const calculateRemainingTime = () => {
+        const remainingMs = durationMs - elapsedTime;
+        return "-" + formatTime(remainingMs);
+    };
+
     const playerWrapperClass = isExpanded ? "player-wrapper expanded" : "player-wrapper";
 
     return (
@@ -188,7 +226,7 @@ const Player = () => {
                                 <p>{(currentTrack || lastPlayedTrack)?.artists?.map(artist => artist.name).join(", ")}</p>
                             </div>
                         </>
-                    ) : "Aucune piste sélectionnée"}
+                    ) : <p>Aucune piste en cours</p>}
                 </div>
                 <div className="bouton-wrapper">
                     <button className="cta-bouton" onClick={() => controlPlayback('previous')}>
@@ -203,10 +241,10 @@ const Player = () => {
                 </div>
             </div>
             <div className="progress-container">
-                <div className="progress" style={{ width: `${(progressMs / durationMs) * 100}%`, backgroundColor: backgroundColor }}></div>
+                <div className="progress" style={{ width: `${(progressMs / durationMs) * 100}%` }}></div>
             </div>
             <div className="time-info">
-                <span>{formatTime(progressMs)}</span>
+                <span>{formatTime(elapsedTime)}</span>
                 <span>{calculateRemainingTime()}</span>
             </div>
             <div className="parole-container" style={{ backgroundColor: backgroundColor2 }}>

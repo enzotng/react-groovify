@@ -23,7 +23,7 @@ const Content = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Auth />} exact />
+        <Route path="/" element={<Auth />} />
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
         <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />

@@ -76,13 +76,13 @@
   }
   .progress-container {
     width: 100%;
-    height: 4px;
+    height: 5px;
     background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
+    border-radius: 10px;
     .progress {
-      background-color: var(--secondary-purple);
-      height: 4px;
-      border-radius: 20px;
+      background-color: var(--primary-white);
+      height: 5px;
+      border-radius: 10px;
     }
   }
   .time-info {
@@ -102,13 +102,13 @@
   border: none;
   border-radius: 0px;
   overflow-y: auto;
-  gap: 30px;
+  gap: 15px;
   .player-container {
     flex-direction: column;
-    gap: 30px;
+    gap: 15px;
     .player-infos {
       flex-direction: column;
-      gap: 30px;
+      gap: 15px;
       img {
         width: 100%;
         height: 100%;
