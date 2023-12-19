@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useUserContext } from '../../config/UserContext';
+import { useState, useEffect, useCallback  } from 'react';
 import ColorThief from 'colorthief';
 import Play from '../../../assets/icon/play.svg';
 import Pause from '../../../assets/icon/pause.svg';
 import Previous from '../../../assets/icon/previous.svg';
 import Next from '../../../assets/icon/next.svg';
 import CloseBouton from '../../../assets/icon/c-vector-chevron.svg';
+import ShareBouton from '../../../assets/icon/share.svg';
+import { useUserContext } from '../../config/UserContext';
 import './Player.scss';
 
 const Player = () => {
@@ -15,66 +16,49 @@ const Player = () => {
     const [progressMs, setProgressMs] = useState(0);
     const [durationMs, setDurationMs] = useState(0);
     const [lyrics, setLyrics] = useState('');
-    const { accessToken, musixAPI, trackToPlay } = useUserContext();
+    const { musixAPI } = useUserContext();
     const [elapsedTime, setElapsedTime] = useState(0);
     const [intervalId, setIntervalId] = useState(null);
-
     const [isExpanded, setIsExpanded] = useState(false);
+    const { userProfile } = useUserContext();
+    const accessToken = userProfile?.accessToken;
 
     const [backgroundColor, setBackgroundColor] = useState('rgba(11, 9, 28, 1)');
     const [backgroundColor2, setBackgroundColor2] = useState('rgba(11, 9, 28, 1)');
-    const boxShadowColor = backgroundColor.replace(/[^,]+(?=\))/, '1');
+    const boxShadowColor = backgroundColor.replace(/[^,]+(?=\))/, '0.2');
 
-    const toggleExpansion = () => {
+    const toggleExpansion = (e) => {
+        e.stopPropagation();
+        setIsExpanded(!isExpanded);
+    };
+
+    const openPlayer = () => {
         if (!isExpanded) {
             setIsExpanded(true);
         }
     };
 
-    useEffect(() => {
-        if (trackToPlay) {
-            console.log("trackToPlay in Player:", trackToPlay);
-            setCurrentTrack(trackToPlay);
-            playTrack(trackToPlay.id);
-        }
-    }, [trackToPlay]);    
+    const closePlayer = (e) => {
+        e.stopPropagation();
+        setIsExpanded(false);
+    };
 
-    console.log(trackToPlay);
-
-    const playTrack = async (trackId) => {
-        console.log("Playing track with ID:", trackId);
-        if (!accessToken || !trackId) {
-            console.error("Token d'accès ou identifiant du morceau manquant.");
-            return;
-        }
-    
-        try {
-            const response = await fetch('https://api.spotify.com/v1/me/player/play', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    uris: [`spotify:track:${trackId}`]
+    const shareTrack = () => {
+        if (currentTrack && currentTrack.external_urls && currentTrack.external_urls.spotify) {
+            navigator.clipboard.writeText(currentTrack.external_urls.spotify)
+                .then(() => {
+                    console.log("Lien de la piste copié dans le presse-papiers.");
                 })
-            });
-    
-            if (!response.ok) {
-                throw new Error(`Erreur API Spotify: ${response.status}`);
-            }
-    
-            setIsPlaying(true);
-            console.log("Lecture de la piste commencée.");
-        } catch (error) {
-            console.error("Erreur lors de la lecture de la piste:", error);
+                .catch(err => {
+                    console.error("Erreur lors de la copie du lien :", err);
+                });
+        } else {
+            console.log("Aucun lien de piste disponible pour le partage.");
         }
     };    
 
     useEffect(() => {
         if (currentTrack) {
-            fetchLyrics(currentTrack.name, currentTrack.artists[0].name);
-
             const img = new Image();
             img.crossOrigin = 'Anonymous';
             img.src = currentTrack?.album?.images[0]?.url;
@@ -82,13 +66,17 @@ const Player = () => {
             img.onload = () => {
                 const colorThief = new ColorThief();
                 const dominantColor = colorThief.getColor(img);
-                setBackgroundColor(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 0.4)`);
+                setBackgroundColor(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 0.2)`);
                 setBackgroundColor2(`rgba(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]}, 1)`);
             };
         }
     }, [currentTrack]);
 
-    const getCurrentTrack = async () => {
+    const getCurrentTrack = useCallback(async () => {
+        if (!accessToken) {
+            console.log("Player: Pas de accessToken disponible.");
+            return;
+        }
         try {
             const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
                 method: 'GET',
@@ -115,13 +103,14 @@ const Player = () => {
                 setProgressMs(data.progress_ms);
                 setDurationMs(data.item.duration_ms);
                 setIsPlaying(data.is_playing);
+                console.log("Player: Piste actuelle récupérée", data.item);
             }
         } catch (error) {
             console.error("Erreur lors de la récupération de la piste actuelle:", error);
         }
-    };
+    }, [accessToken]);
 
-    const getLastPlayedTrack = async () => {
+    const getLastPlayedTrack = useCallback(async () => {
         try {
             const response = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1', {
                 headers: { Authorization: `Bearer ${accessToken}` }
@@ -139,7 +128,15 @@ const Player = () => {
         } catch (error) {
             console.error("Erreur lors de la récupération de la dernière piste écoutée:", error);
         }
-    };
+    }, [accessToken]);
+
+    useEffect(() => {
+        console.log("Player: accessToken", accessToken);
+        if (accessToken) {
+            getCurrentTrack();
+            // getLastPlayedTrack();
+        }
+    }, [accessToken, getCurrentTrack]);
 
     const formatTime = (ms) => {
         const totalSeconds = Math.floor(ms / 1000);
@@ -174,15 +171,8 @@ const Player = () => {
         }
     };
 
-    useEffect(() => {
-        if (accessToken) {
-            getCurrentTrack();
-            getLastPlayedTrack();
-        }
-    }, [accessToken, currentTrack]);
-
     const cleanLyrics = (lyrics) => {
-        const unwantedText = "\n...\n\n******* This Lyrics is NOT for Commercial use *******";
+        const unwantedText = "\n...\n\n******* This Lyrics is NOT for Commercial use *******\n(1409624065245)";
         let cleanedLyrics = lyrics.replace(unwantedText, '');
 
         cleanedLyrics = cleanedLyrics.replace(/\n/g, '<br/>');
@@ -247,7 +237,6 @@ const Player = () => {
         } else {
             stopTimer();
         }
-    
         return () => stopTimer();
     }, [isPlaying]);
 
@@ -266,11 +255,16 @@ const Player = () => {
     const playerWrapperClass = isExpanded ? "player-wrapper expanded" : "player-wrapper";
 
     return (
-        <div className={playerWrapperClass} onClick={toggleExpansion} style={{ backgroundColor: backgroundColor }}>
+        <div className={playerWrapperClass} onClick={openPlayer} style={{ backgroundColor: backgroundColor }}>
             {isExpanded && (
-                <button className="close-bouton" onClick={() => setIsExpanded(false)}>
-                    <img src={CloseBouton} alt="Next" />
-                </button>
+                <div className="close-bouton-wrapper">
+                    <button className="close-bouton" onClick={closePlayer}>
+                        <img src={CloseBouton} alt="Close" />
+                    </button>
+                    <button className="share-bouton" onClick={shareTrack}>
+                        <img src={ShareBouton} alt="Share Bouton" />
+                    </button>
+                </div>
             )}
             <div className="player-container">
                 <div className="player-infos">
@@ -279,7 +273,7 @@ const Player = () => {
                             <img
                                 src={(currentTrack || lastPlayedTrack)?.album?.images[0]?.url}
                                 alt={(currentTrack || lastPlayedTrack)?.name}
-                                style={{ boxShadow: isExpanded ? `0px 12px 100px 0px ${boxShadowColor}` : 'none' }}
+                                style={{ boxShadow: isExpanded ? `0px 12px 70px 0px ${boxShadowColor}` : 'none' }}
                             />                           
                             <div className="player-content">
                                 <p>{(currentTrack || lastPlayedTrack)?.name}</p>

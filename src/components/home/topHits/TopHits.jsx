@@ -1,20 +1,16 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import "../Swiper.scss";
-import { UserContext } from "../../config/UserContext";
+import { useUserContext } from "../../config/UserContext";
 
 const TopHits = () => {
     const [topFranceTracks, setTopFranceTracks] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { accessToken, setTrackToPlay } = useContext(UserContext);
+    const { setTrackToPlay } = useUserContext();
+    const { userProfile } = useUserContext();
+    const accessToken = userProfile ? userProfile.accessToken : null;
     const playlistId = '37i9dQZEVXbIPWwFssbupI';
-
-    const playTrack = (track) => {
-        setTrackToPlay(track);
-    };
-
-    console.log("Track to play set:", track);
 
     useEffect(() => {
         const fetchPlaylistTracks = async () => {
@@ -25,6 +21,7 @@ const TopHits = () => {
 
             try {
                 const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=6`;
+                console.log(url);
                 const response = await fetch(url, {
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
@@ -43,7 +40,11 @@ const TopHits = () => {
         };
 
         fetchPlaylistTracks();
-    }, [accessToken, playlistId]);
+    }, [accessToken]);
+
+    const playSelectedTrack = (track) => {
+        setTrackToPlay(track);
+    };
 
     return (
         <div className="slider-wrapper">
@@ -64,7 +65,7 @@ const TopHits = () => {
                         </SwiperSlide>
                     ))
                     : topFranceTracks.map((track, index) => (
-                        <SwiperSlide className="top-france" key={index} onClick={() => playTrack(track)}>
+                        <SwiperSlide className="top-france" key={index} onClick={() => playSelectedTrack(track)}>
                             <img src={track.album.images[0]?.url} alt={track.name} />
                             <div className="slider-wrapper-content">
                                 <p className="artiste-album">{track.name}</p>

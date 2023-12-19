@@ -4,7 +4,6 @@ import NavFooter from "./components/common/NavFooter";
 import Home from "./components/home/Home";
 import Explore from "./components/explore/Explore";
 import Library from "./components/library/Library";
-import LibraryDetails from "./components/library/LibraryDetails";
 import Profile from "./components/profile/Profile";
 import Artiste from "./components/artiste/Artiste";
 import Auth from "./components/auth/Auth";
@@ -20,6 +19,7 @@ const ProtectedRoute = ({ children }) => {
 const Content = () => {
   const { userProfile } = useUserContext();
   const token = userProfile ? userProfile.accessToken : null;
+
   return (
     <>
       <Routes>
@@ -27,13 +27,12 @@ const Content = () => {
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
         <Route path="/library" element={<ProtectedRoute><Library /></ProtectedRoute>} />
-        <Route path="/library/details/:playlistId" element={<ProtectedRoute><LibraryDetails /></ProtectedRoute>} />
         <Route path="/profile/*" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/artiste/:id" element={<ProtectedRoute><Artiste /></ProtectedRoute>} />
         <Route path="/callback" element={<Auth />} />
       </Routes>
       {token && <Player />}
-      <NavFooter />
+      {token && <NavFooter />}
     </>
   );
 };

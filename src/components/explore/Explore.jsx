@@ -5,7 +5,7 @@ import PlayButton from "../../assets/icon/play.svg";
 import "./Explore.scss";
 
 const Explore = () => {
-  const { clientId, clientSecret } = useUserContext();
+  const { accessToken } = useUserContext();
   const [recherche, setRecherche] = useState("");
   const [artistes, setArtistes] = useState([]);
   const [titres, setTitres] = useState([]);
@@ -14,31 +14,15 @@ const Explore = () => {
   const [ongletActif, setOngletActif] = useState("titres");
   const [idArtisteSelectionne, setIdArtisteSelectionne] = useState(null);
 
-  const obtenirJetonAcces = useCallback(async () => {
-    try {
-      const reponse = await fetch("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: "Basic " + btoa(`${clientId}:${clientSecret}`),
-        },
-        body: "grant_type=client_credentials",
-      });
-      const donnees = await reponse.json();
-      return donnees.access_token;
-    } catch (erreur) {
-      console.error("Erreur :", erreur);
-      throw erreur;
-    }
-  }, [clientId, clientSecret]);
+  const chercherSurSpotify = useCallback(async () => {
+    if (!accessToken || !recherche) return;
 
-  const chercherSurSpotify = useCallback(async (jetonAcces) => {
     try {
       const reponse = await fetch(
-        `https://api.spotify.com/v1/search?q=${recherche}&type=track,album,artist`,
+        `https://api.spotify.com/v1/search?q=${encodeURIComponent(recherche)}&type=track,album,artist`,
         {
           headers: {
-            Authorization: "Bearer " + jetonAcces,
+            Authorization: "Bearer " + accessToken,
           },
         }
       );
@@ -48,17 +32,18 @@ const Explore = () => {
       setArtistes(donnees.artists.items);
     } catch (erreur) {
       console.error("Erreur :", erreur);
-      throw erreur;
     }
-  }, [recherche]);
+  }, [recherche, accessToken]);
 
-  async function obtenirAlbumsArtiste(idArtiste, jetonAcces) {
+  async function obtenirAlbumsArtiste(idArtiste) {
+    if (!accessToken || !idArtiste) return;
+
     try {
       const reponse = await fetch(
         `https://api.spotify.com/v1/artists/${idArtiste}/albums`,
         {
           headers: {
-            Authorization: "Bearer " + jetonAcces,
+            Authorization: "Bearer " + accessToken,
           },
         }
       );
@@ -66,7 +51,6 @@ const Explore = () => {
       setAlbums(donnees.items);
     } catch (erreur) {
       console.error("Erreur :", erreur);
-      throw erreur;
     }
   }
 
@@ -75,36 +59,12 @@ const Explore = () => {
   }
 
   useEffect(() => {
-    if (idDelai) {
-      clearTimeout(idDelai);
-    }
-
-    if (recherche) {
-      const temporisateur = setTimeout(async () => {
-        const jetonAcces = await obtenirJetonAcces();
-        chercherSurSpotify(jetonAcces);
-      }, 200);
-
-      setIdDelai(temporisateur);
-    } else {
-      setArtistes([]);
-      setTitres([]);
-      setAlbums([]);
-    }
-
-    return () => clearTimeout(idDelai);
-  }, [recherche]);
+    chercherSurSpotify();
+  }, [recherche, chercherSurSpotify]);
 
   useEffect(() => {
-    if (idArtisteSelectionne) {
-      const chercherAlbums = async () => {
-        const jetonAcces = await obtenirJetonAcces();
-        obtenirAlbumsArtiste(idArtisteSelectionne, jetonAcces);
-      };
-
-      chercherAlbums();
-    }
-  }, [idArtisteSelectionne, obtenirJetonAcces]);
+    obtenirAlbumsArtiste(idArtisteSelectionne);
+  }, [idArtisteSelectionne]);
 
   const artistesVus = {};
   const artistesUniques = artistes.filter((artiste) => {
@@ -115,38 +75,6 @@ const Explore = () => {
     artistesVus[nomMinuscule] = true;
     return true;
   });
-
-  useEffect(() => {
-    obtenirJetonAcces().then(jetonAcces => {
-      obtenirGenres(jetonAcces);
-    });
-  }, [obtenirJetonAcces]);
-
-  async function obtenirGenres(jetonAcces) {
-    try {
-      const reponse = await fetch(
-        "https://api.spotify.com/v1/recommendations/available-genre-seeds",
-        {
-          headers: {
-            Authorization: "Bearer " + jetonAcces,
-          },
-        }
-      );
-      const donnees = await reponse.json();
-      setGenres(donnees.genres);
-    } catch (erreur) {
-      console.error("Erreur lors de la récupération des genres :", erreur);
-    }
-  }
-
-  useEffect(() => {
-    const chercherGenres = async () => {
-      const jetonAcces = await obtenirJetonAcces();
-      obtenirGenres(jetonAcces);
-    };
-
-    chercherGenres();
-  }, []);
 
   return (
     <main>
@@ -165,7 +93,7 @@ const Explore = () => {
             ></path>
           </svg>
 
-          <h1>Explore</h1>
+          <h1>Explore new sounds</h1>
         </div>
         <div className="input-wrapper">
           <input

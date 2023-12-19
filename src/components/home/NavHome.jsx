@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import "./NavHome.scss";
 import { Link } from "react-router-dom";
-
 import { useUserContext } from "../config/UserContext";
 
 const Navbar = () => {
@@ -28,11 +27,11 @@ const Navbar = () => {
     <header style={{ borderBottom: isScrolled ? "1px solid rgba(255, 255, 255, 0.05)" : "none" }}>
       <nav className="navbar">
         <div className="navbar-user">
-          <img
+        <img
             className="navbar-logo"
-            src={userProfile ? userProfile.images[1].url : ""}
+            src={userProfile && userProfile.images && userProfile.images[1] ? userProfile.images[1].url : ""}
             alt="User"
-          />{" "}
+          />
           <div className="navbar-user-text">
             <p className="thin">Good Morning 👋</p>
             <p className="gras">

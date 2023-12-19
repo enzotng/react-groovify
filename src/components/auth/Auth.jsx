@@ -1,89 +1,70 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Logo from '../../assets/icon/spotify.svg';
-import './Auth.scss';
-import { useUserContext } from '../config/UserContext';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Logo from "../../assets/icon/spotify.svg";
+import "./Auth.scss";
+
+import { SpotifyAuth, Scopes } from "react-spotify-auth";
+import "react-spotify-auth/dist/index.css";
+
+import { useUserContext } from "../config/UserContext";
+
+const redirectUri = "http://localhost:3001/callback";
 
 const Auth = () => {
-  const { setUserProfile, setAccessToken, clientId } = useUserContext();
+  const { setUserProfile, clientId } = useUserContext();
   const navigate = useNavigate();
 
-  const authEndpoint = 'https://accounts.spotify.com/authorize';
-  const redirectUri = 'http://localhost:3001/callback';
-  const scopes = [
-    'user-read-private',
-    'user-read-email',
-    'user-top-read',
-    'playlist-read-private',
-    'user-read-currently-playing',
-    'user-read-playback-state',
-    'user-read-recently-played',
-    'user-modify-playback-state',
-  ];
-
-  const redirectToSpotifyLogin = () => {
-    const scopeString = scopes.join('%20');
-    window.location.href = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopeString}&response_type=token&show_dialog=true`;
-  };
-
-  const getTokenFromUrl = () => {
-    const hash = window.location.hash;
-    return hash ? new URLSearchParams(hash.substring(1)).get('access_token') : null;
-  };
-
-  const fetchUserProfile = async (token) => {
+  const fetchUserProfile = async (accessToken) => {
     try {
-      const response = await fetch('https://api.spotify.com/v1/me', {
-        method: 'GET',
+      const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: "Bearer " + accessToken,
         },
-        mode: 'cors'
       });
 
       if (!response.ok) {
-        console.error('Error fetching user profile: Response not ok');
-        throw new Error('Network or token error');
+        throw new Error(`HTTP Error: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      data.accessToken = accessToken;
+      return data;
     } catch (error) {
-      console.error('Error fetching user profile:', error);
-      navigate('/');
-      setAccessToken(null);
-      setUserProfile(null);
+      console.error("Erreur lors de la récupération du profil utilisateur:", error);
     }
   };
 
-  useEffect(() => {
-    const existingToken = getTokenFromUrl();
-  
-    if (!existingToken) {
-      navigate('/');
-      return;
+  const onAccessToken = async (accessToken) => {
+    try {
+      const userProfile = await fetchUserProfile(accessToken);
+      setUserProfile({ ...userProfile, accessToken });
+      navigate("/home");
+    } catch (error) {
+      console.error("Erreur:", error);
     }
-  
-    setAccessToken(existingToken);
-  
-    const initUserProfile = async () => {
-      const userProfile = await fetchUserProfile(existingToken);
-      if (userProfile) {
-        setUserProfile({ ...userProfile, accessToken: existingToken });
-        navigate('/home');
-      }
-    };
-  
-    initUserProfile();
-  }, [navigate, setAccessToken, setUserProfile]);
+  };
 
   return (
     <div className="auth-container">
-      <img src={Logo} alt="Logo Spotify" />
+      <img src={Logo} alt="Logo" />
       <div className="auth-container-wrapper">
-        <h1>Connectez-vous à votre compte Spotify</h1>
-        <p>Pour utiliser notre application Groovify, vous devez vous connecter avec votre compte Spotify.</p>
-        <button onClick={redirectToSpotifyLogin}>Se connecter à Spotify</button>
+        <h1>Spotify account</h1>
+        <p>To use our Groovify App, you need to login to your account</p>
+        <SpotifyAuth
+          redirectUri={redirectUri}
+          clientID={clientId}
+          scopes={[
+            Scopes.userReadPrivate,
+            Scopes.userReadEmail,
+            Scopes.playlistReadPrivate,
+            Scopes.userTopRead,
+            Scopes.userReadCurrentlyPlaying,
+            Scopes.userReadPlaybackState,
+            Scopes.userReadRecentlyPlayed,
+            Scopes.userModifyPlaybackState,
+          ]}
+          onAccessToken={onAccessToken}
+        />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useUserContext } from "../config/UserContext";
 import House from "../../assets/icon/house.svg";
 import ExploreIcon from "../../assets/icon/compass.svg";
 import LibraryIcon from "../../assets/icon/books.svg";
@@ -8,13 +9,22 @@ import "./NavFooter.scss";
 
 const NavFooter = () => {
   const location = useLocation();
+  const { userProfile } = useUserContext();
+  const isLoggedIn = userProfile && userProfile.accessToken;
+
+  if (!isLoggedIn) {
+    return null;
+  }
 
   return (
     <div className="nav-footer-wrapper">
       <nav>
         <ul>
           <li>
-            <Link to="/home" className={location.pathname === "/" ? "active" : ""}>
+            <Link
+              to="/home"
+              className={location.pathname === "/" ? "active" : ""}
+            >
               <img src={House} alt="Home" />
               <span>Home</span>
             </Link>

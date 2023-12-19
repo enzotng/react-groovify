@@ -1,17 +1,19 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import "../Swiper.scss";
-import { UserContext } from "../../config/UserContext";
+import { useUserContext } from "../../config/UserContext";
 
-const TopItems = ({ type = 'tracks', time_range = 'short_term' }) => {
+const TopItems = ({ type = "tracks", time_range = "short_term" }) => {
     const [topItems, setTopItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { accessToken } = useContext(UserContext);
+    const { userProfile } = useUserContext();
+    const accessToken = userProfile?.accessToken;
 
     useEffect(() => {
         const fetchTopItems = async () => {
             if (!accessToken) {
+                console.log("No access token available.");
                 setLoading(false);
                 return;
             }
@@ -23,13 +25,13 @@ const TopItems = ({ type = 'tracks', time_range = 'short_term' }) => {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Erreur de réponse : ${response.status}`);
+                    throw new Error(`Error response: ${response.status}`);
                 }
 
                 const data = await response.json();
                 setTopItems(data.items);
             } catch (error) {
-                console.error("Erreur :", error);
+                console.error("Error:", error);
             } finally {
                 setLoading(false);
             }

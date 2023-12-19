@@ -1,19 +1,20 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import "./Recently.scss";
-import { UserContext } from "../../config/UserContext";
+import { useUserContext } from "../../config/UserContext";
 
 const Recently = () => {
     const [recentTracks, setRecentTracks] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { accessToken } = useContext(UserContext);
+    const { userProfile } = useUserContext();
+    const accessToken = userProfile?.accessToken;
 
     useEffect(() => {
-        const fetchRecentTracks = async () => {
-            if (!accessToken) {
-                setLoading(false);
-                return;
-            }
+        if (!accessToken) {
+            setLoading(false);
+            return;
+        }
 
+        const fetchRecentTracks = async () => {
             try {
                 const response = await fetch("https://api.spotify.com/v1/me/player/recently-played", {
                     headers: { Authorization: `Bearer ${accessToken}` },
@@ -33,17 +34,14 @@ const Recently = () => {
         };
 
         fetchRecentTracks();
-    }, [accessToken]);
+    }, [accessToken]); 
 
     return (
         <div className="grid-wrapper">
             {loading ? (
                 Array(6).fill(0).map((_, idx) => (
-                    <div key={idx} className="grid-item">
-                        <div className="squelette-image"></div>
-                        <div className="grid-item-content">
-                            <div className="squelette-text"></div>
-                        </div>
+                    <div key={idx} className="grid-item skeleton-item">
+                        {/* Contenu du squelette */}
                     </div>
                 ))
             ) : (

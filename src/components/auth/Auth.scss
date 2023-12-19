@@ -31,11 +31,18 @@
     font-family: var(--primary-font);
     background-color: var(--primary-purple);
     border: none;
-    padding: 8px 12px;
+    padding: 8px;
     border-radius: 5px;
     color: var(--primary-white);
     cursor: pointer;
     transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    svg {
+      padding: 0px;
+      width: fit-content;
+    }
     &:hover {
       transform: translateY(-2.5px);
     }
