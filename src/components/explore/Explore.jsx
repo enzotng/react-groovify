@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUserContext } from '../config/UserContext';
 import PlayButton from "../../assets/icon/play.svg";
 import "./Explore.scss";
@@ -14,6 +14,8 @@ const Explore = () => {
   const [genres, setGenres] = useState([]);
   const [ongletActif, setOngletActif] = useState("resultat");
   const [idArtisteSelectionne, setIdArtisteSelectionne] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const chercherSurSpotify = useCallback(async () => {
     if (!accessToken || !recherche) return;
@@ -74,6 +76,18 @@ const Explore = () => {
   useEffect(() => {
     obtenirAlbumsArtiste(idArtisteSelectionne);
   }, [idArtisteSelectionne]);
+
+  useEffect(() => {
+    if (location.state?.searchTerm) {
+      setRecherche(location.state.searchTerm);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (recherche !== location.state?.searchTerm) {
+      navigate(location.pathname, { state: { searchTerm: recherche } });
+    }
+  }, [recherche, navigate, location]);
 
   const artistesVus = {};
   const artistesUniques = artistes.filter((artiste) => {

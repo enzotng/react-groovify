@@ -1,5 +1,5 @@
+import BlindTestPopup from "./blindTest/BlindTestPopup";
 import Latest from "./latestReleases/Latest";
-import BlindTest from "./blindTest/BlindTest";
 import Recently from "./recentlyPlayed/Recently";
 import NavHome from "./NavHome";
 import TopHits from "./topHits/TopHits";
@@ -14,6 +14,10 @@ const Home = () => {
       <main>
         <div className="homeWrapper">
           <section className="c-section">
+            <article className="c-article">
+              <h1>Groovify's Blind Test</h1>
+              <BlindTestPopup />
+            </article>
             <article className="c-article">
               <h1>Recently played</h1>
               <Recently />
@@ -31,11 +35,6 @@ const Home = () => {
             <article className="c-article">
               <h1>Top charts</h1>
               <TopHits />
-            </article>
-
-            <article className="c-article">
-              <h1>Blindtest</h1>
-              <BlindTest />
             </article>
           </section>
         </div>

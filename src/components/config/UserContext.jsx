@@ -7,14 +7,12 @@ export const UserProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
 
-  // Environnement variables
   const musixAPI = import.meta.env.VITE_MUSIXMATCH_API_KEY;
   // const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
   // const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
   const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID_2;
   const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET_2;
 
-  // Charger le profil et le token de l'utilisateur depuis le localStorage
   useEffect(() => {
     const userProfileData = localStorage.getItem("userProfile");
     if (userProfileData) {
@@ -33,7 +31,6 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  // Enregistrer le profil et le token de l'utilisateur dans le localStorage
   useEffect(() => {
     if (userProfile && accessToken) {
       localStorage.setItem(

@@ -8,10 +8,11 @@ import Next from '../../../assets/icon/next.svg';
 import Restart from '../../../assets/icon/restart.svg';
 import CloseBouton from '../../../assets/icon/c-vector-chevron.svg';
 import ShareBouton from '../../../assets/icon/share.svg';
+import { Share } from '@capacitor/share';
 import { useUserContext } from '../../config/UserContext';
 import './Player.scss';
 
-const Player = () => {
+const Player = ({ externalTrack }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTrack, setCurrentTrack] = useState(null);
     const [progressMs, setProgressMs] = useState(0);
@@ -40,19 +41,22 @@ const Player = () => {
         setIsExpanded(false);
     };
 
-    const shareTrack = () => {
+    const shareTrack = async () => {
         if (currentTrack && currentTrack.external_urls && currentTrack.external_urls.spotify) {
-            navigator.clipboard.writeText(currentTrack.external_urls.spotify)
-                .then(() => {
-                    console.log("Lien de la piste copié dans le presse-papiers.");
-                })
-                .catch(err => {
-                    console.error("Erreur lors de la copie du lien :", err);
+            try {
+                await Share.share({
+                    title: 'Découvrez cette piste',
+                    text: `Écoutez "${currentTrack.name}" sur Spotify!`,
+                    url: currentTrack.external_urls.spotify,
+                    dialogTitle: 'Partagez cette piste',
                 });
+            } catch (error) {
+                console.error("Erreur lors du partage de la piste :", error);
+            }
         } else {
             console.log("Aucun lien de piste disponible pour le partage.");
         }
-    };
+    };    
 
     useEffect(() => {
         if (currentTrack) {
@@ -143,6 +147,31 @@ const Player = () => {
             getCurrentTrack();
         }
     }, [accessToken, getCurrentTrack]);
+
+    const playExternalTrack = useCallback(async (track) => {
+        const playEndpoint = 'https://api.spotify.com/v1/me/player/play';
+        try {
+            await fetch(playEndpoint, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ uris: [track.uri] })
+            });
+            setCurrentTrack(track);
+            setIsPlaying(true);
+        } catch (error) {
+            console.error("Erreur lors de la lecture de la piste :", error);
+        }
+    }, [accessToken]);
+
+    useEffect(() => {
+        console.log('Nouvelle piste reçue:', externalTrack);
+        if (externalTrack) {
+            playExternalTrack(externalTrack);
+        }
+    }, [externalTrack, playExternalTrack]);
 
     const formatTime = (ms) => {
         const totalSeconds = Math.floor(ms / 1000);
@@ -315,6 +344,7 @@ const Player = () => {
                     <button className="close-bouton" onClick={closePlayer}>
                         <img src={CloseBouton} alt="Close" />
                     </button>
+                    <span>Groovify</span>
                     <button className="share-bouton" onClick={shareTrack}>
                         <img src={ShareBouton} alt="Share Bouton" />
                     </button>

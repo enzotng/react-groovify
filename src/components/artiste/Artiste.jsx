@@ -1,6 +1,8 @@
 import { useEffect, useState, Suspense } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useUserContext } from "../config/UserContext";
+import ArrowBack from "../../assets/icon/arrow-back.svg";
+import SearchIcon from '../../assets/icon/search.svg';
 import Play from '../../assets/icon/play.svg';
 import "./Artiste.scss";
 
@@ -11,6 +13,7 @@ const Artiste = () => {
   const [artiste, setArtiste] = useState(null);
   const [latestAlbum, setLatestAlbum] = useState(null);
   const [albums, setAlbums] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchArtisteAndAlbums = async () => {
@@ -49,6 +52,15 @@ const Artiste = () => {
     fetchArtisteAndAlbums();
   }, [id, accessToken]);
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('fr-FR', options);
+  };
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   return (
     <main className="artiste-main">
       <Suspense fallback={<div>Loading artist details...</div>}>
@@ -60,6 +72,14 @@ const Artiste = () => {
               ) : (
                 <div>No Image Available</div>
               )}
+              <div className="artiste-cta">
+                <button onClick={handleBackClick}>
+                  <img src={ArrowBack} alt="Icone Arrow" />
+                </button>
+                <button className="cta-bouton">
+                  <img src={SearchIcon} alt="Next" />
+                </button>
+              </div>
               <div className="artiste-info">
                 <h1>{artiste.name}</h1>
                 <button className="cta-bouton">
@@ -70,11 +90,13 @@ const Artiste = () => {
             <div className="artiste-music-wrapper">
               {latestAlbum && (
                 <div className="artiste-new">
-                  <img src={latestAlbum.images[0]?.url} alt={latestAlbum.name} />
+                  <div className="artiste-new-pochette">
+                    <img src={latestAlbum.images[0]?.url} alt={latestAlbum.name} />
+                    <span>New album</span>
+                  </div>
                   <div className="artiste-new-infos">
                     <h2>{latestAlbum.name}</h2>
-                    <span>Release Date: {latestAlbum.release_date}</span>
-                    <span>Genre: {artiste.genres.join(', ')}</span>
+                    <span>{artiste.genres[0]} | {formatDate(latestAlbum.release_date)}</span>
                   </div>
                 </div>
               )}
