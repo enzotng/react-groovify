@@ -14,7 +14,6 @@ import './Player.scss';
 const Player = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTrack, setCurrentTrack] = useState(null);
-    const [lastPlayedTrack, setLastPlayedTrack] = useState(null);
     const [progressMs, setProgressMs] = useState(0);
     const [durationMs, setDurationMs] = useState(0);
     const [lyrics, setLyrics] = useState('');
@@ -29,11 +28,6 @@ const Player = () => {
     const [backgroundColor, setBackgroundColor] = useState('rgba(11, 9, 28, 1)');
     const [backgroundColor2, setBackgroundColor2] = useState('rgba(11, 9, 28, 1)');
     const boxShadowColor = backgroundColor.replace(/[^,]+(?=\))/, '0.2');
-
-    const toggleExpansion = (e) => {
-        e.stopPropagation();
-        setIsExpanded(!isExpanded);
-    };
 
     const openPlayer = () => {
         if (!isExpanded) {
@@ -328,16 +322,16 @@ const Player = () => {
             )}
             <div className="player-container">
                 <div className="player-infos">
-                    {currentTrack || lastPlayedTrack ? (
+                    {currentTrack ? (
                         <>
                             <img
-                                src={(currentTrack || lastPlayedTrack)?.album?.images[0]?.url}
-                                alt={(currentTrack || lastPlayedTrack)?.name}
+                                src={(currentTrack)?.album?.images[0]?.url}
+                                alt={(currentTrack)?.name}
                                 style={{ boxShadow: isExpanded ? `0px 12px 70px 0px ${boxShadowColor}` : 'none' }}
                             />
                             <div className="player-content">
-                                <p>{(currentTrack || lastPlayedTrack)?.name}</p>
-                                <p>{(currentTrack || lastPlayedTrack)?.artists?.map(artist => artist.name).join(", ")}</p>
+                                <p>{(currentTrack)?.name}</p>
+                                <p>{(currentTrack)?.artists?.map(artist => artist.name).join(", ")}</p>
                             </div>
                         </>
                     ) : <p>Aucune piste en cours</p>}

@@ -20,7 +20,6 @@ const TopHits = () => {
 
             try {
                 const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=6`;
-                console.log(url);
                 const response = await fetch(url, {
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
