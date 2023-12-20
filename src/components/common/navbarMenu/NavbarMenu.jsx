@@ -1,13 +1,13 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useUserContext } from "../config/UserContext";
-import House from "../../assets/icon/house.svg";
-import ExploreIcon from "../../assets/icon/compass.svg";
-import LibraryIcon from "../../assets/icon/books.svg";
-import ProfileIcon from "../../assets/icon/user.svg";
-import "./NavFooter.scss";
+import { useUserContext } from "../../config/UserContext";
+import House from "../../../assets/icon/house.svg";
+import ExploreIcon from "../../../assets/icon/compass.svg";
+import LibraryIcon from "../../../assets/icon/books.svg";
+import ProfileIcon from "../../../assets/icon/user.svg";
+import "./NavbarMenu.scss";
 
-const NavFooter = () => {
+const NavbarMenu = () => {
   const location = useLocation();
   const { userProfile } = useUserContext();
   const isLoggedIn = userProfile && userProfile.accessToken;
@@ -62,4 +62,4 @@ const NavFooter = () => {
   );
 };
 
-export default NavFooter;
+export default NavbarMenu;

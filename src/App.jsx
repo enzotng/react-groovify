@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Footer from "./components/common/Footer";
-import NavFooter from "./components/common/NavFooter";
+import Footer from "./components/common/footer/Footer";
+import NavbarMenu from "./components/common/navbarMenu/NavbarMenu";
 import Home from "./components/home/Home";
 import Explore from "./components/explore/Explore";
 import Library from "./components/library/Library";
@@ -33,7 +33,7 @@ const Content = () => {
         <Route path="/callback" element={<Auth />} />
       </Routes>
       {token && <Player />}
-      <NavFooter />
+      <NavbarMenu />
     </>
   );
 };

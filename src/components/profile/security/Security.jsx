@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useUserContext } from "../../config/UserContext";
 
-import ToggleSwitch from "../../common/ToggleSwitch/ToggleSwitch";
+import ToggleSwitch from "../../common/toogleSwitch/ToggleSwitch";
 
 import "./Security.scss";
 

@@ -34,19 +34,36 @@ const Recently = () => {
         };
 
         fetchRecentTracks();
-    }, [accessToken]); 
+    }, [accessToken]);
+
+    const playTrack = async (trackUri) => {
+        if (!accessToken) return;
+
+        try {
+            await fetch('https://api.spotify.com/v1/me/player/play', {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ uris: [trackUri] })
+            });
+        } catch (error) {
+            console.error("Erreur lors de la lecture de la piste :", error);
+        }
+    };
 
     return (
         <div className="grid-wrapper">
             {loading ? (
                 Array(6).fill(0).map((_, idx) => (
                     <div key={idx} className="grid-item skeleton-item">
-                        {/* Contenu du squelette */}
+                        <div className="squelette-image"></div>
                     </div>
                 ))
             ) : (
                 recentTracks.slice(0, 6).map((track, index) => (
-                    <div key={index} className="grid-item">
+                    <div key={index} className="grid-item" onClick={() => playTrack(track.track.uri)}>
                         <img src={track.track.album.images[0]?.url} alt={track.track.name} />
                         <div className="grid-item-content">
                             <p className="artiste-album">{track.track.name}</p>

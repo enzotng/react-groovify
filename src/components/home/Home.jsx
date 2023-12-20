@@ -1,5 +1,5 @@
 import Latest from "./latestReleases/Latest";
-// import Genre from "./genre/Genre";
+import BlindTest from "./blindTest/BlindTest";
 import Recently from "./recentlyPlayed/Recently";
 import NavHome from "./NavHome";
 import TopHits from "./topHits/TopHits";
@@ -19,7 +19,7 @@ const Home = () => {
               <Recently />
             </article>
             <article className="c-article">
-            <h1>Latest releases</h1>
+              <h1>Latest releases</h1>
               <Latest />
             </article>
 
@@ -30,7 +30,12 @@ const Home = () => {
 
             <article className="c-article">
               <h1>Top charts</h1>
-              <TopHits/>
+              <TopHits />
+            </article>
+
+            <article className="c-article">
+              <h1>Blindtest</h1>
+              <BlindTest />
             </article>
           </section>
         </div>

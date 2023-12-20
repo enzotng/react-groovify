@@ -40,6 +40,23 @@ const TopItems = ({ type = "tracks", time_range = "short_term" }) => {
         fetchTopItems();
     }, [accessToken, type, time_range]);
 
+    const playTrack = async (trackUri) => {
+        if (!accessToken) return;
+
+        try {
+            await fetch('https://api.spotify.com/v1/me/player/play', {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ uris: [trackUri] })
+            });
+        } catch (error) {
+            console.error("Erreur lors de la lecture de la piste :", error);
+        }
+    };
+
     return (
         <div className="slider-wrapper">
             <Swiper
@@ -59,7 +76,7 @@ const TopItems = ({ type = "tracks", time_range = "short_term" }) => {
                         </SwiperSlide>
                     ))
                     : topItems.map((item, index) => (
-                        <SwiperSlide className="top-items" key={index}>
+                        <SwiperSlide className="top-items" key={index} onClick={() => playTrack(item.uri)}>
                             <img src={type === 'tracks' ? item.album.images[0]?.url : item.images[0]?.url} alt={item.name} />
                             <div className="slider-wrapper-content">
                                 <p className="artiste-album">{item.name}</p>

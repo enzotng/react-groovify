@@ -1,13 +1,11 @@
 import { Link, Routes, Route, useOutlet, useLocation, useNavigate } from "react-router-dom";
 import { useUserContext } from "../config/UserContext";
-
 import Dashboard from "./dashboard/Dashboard";
 import Notification from "./notification/Notification";
 import Audio from "./audio/Audio.jsx";
 import Security from "./security/Security.jsx";
-import ToggleSwitch from "../common/ToggleSwitch/ToggleSwitch.jsx"
+import ToggleSwitch from "../common/toogleSwitch/ToggleSwitch.jsx"
 import Language from "./language/Language.jsx";
-
 import "./Profile.scss";
 
 const Profile = () => {
@@ -102,7 +100,7 @@ const Profile = () => {
         </div>
       )}
       <div className="legal-infos">
-        <p>Version 1.0.1</p>
+        <p>Version 1.0.5</p>
         <p>© Groovify</p>
       </div>
     </main>

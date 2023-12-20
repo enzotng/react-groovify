@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback  } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ColorThief from 'colorthief';
+import Aleatoire from '../../../assets/icon/shuffle.svg';
+import Previous from '../../../assets/icon/previous.svg';
 import Play from '../../../assets/icon/play.svg';
 import Pause from '../../../assets/icon/pause.svg';
-import Previous from '../../../assets/icon/previous.svg';
 import Next from '../../../assets/icon/next.svg';
+import Restart from '../../../assets/icon/restart.svg';
 import CloseBouton from '../../../assets/icon/c-vector-chevron.svg';
 import ShareBouton from '../../../assets/icon/share.svg';
 import { useUserContext } from '../../config/UserContext';
@@ -16,6 +18,7 @@ const Player = () => {
     const [progressMs, setProgressMs] = useState(0);
     const [durationMs, setDurationMs] = useState(0);
     const [lyrics, setLyrics] = useState('');
+    const [isShuffle, setIsShuffle] = useState(false);
     const { musixAPI } = useUserContext();
     const [elapsedTime, setElapsedTime] = useState(0);
     const [intervalId, setIntervalId] = useState(null);
@@ -55,7 +58,7 @@ const Player = () => {
         } else {
             console.log("Aucun lien de piste disponible pour le partage.");
         }
-    };    
+    };
 
     useEffect(() => {
         if (currentTrack) {
@@ -71,6 +74,38 @@ const Player = () => {
             };
         }
     }, [currentTrack]);
+
+    const fetchCurrentTrack = useCallback(async () => {
+        if (!accessToken) {
+            console.log("Player: Pas de accessToken disponible.");
+            return;
+        }
+
+        try {
+            const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+                headers: { 'Authorization': `Bearer ${accessToken}` },
+            });
+
+            if (!response.ok) {
+                console.error("Erreur lors de la récupération de la piste actuelle:", response.statusText);
+                return;
+            }
+
+            const data = await response.json();
+            setCurrentTrack(data.item);
+            setProgressMs(data.progress_ms);
+            setDurationMs(data.item.duration_ms);
+            setIsPlaying(data.is_playing);
+        } catch (error) {
+            console.error("Erreur lors de la récupération de la piste actuelle:", error);
+        }
+    }, [accessToken]);
+
+    useEffect(() => {
+        fetchCurrentTrack();
+        const interval = setInterval(fetchCurrentTrack, 1000);
+        return () => clearInterval(interval);
+    }, [fetchCurrentTrack]);
 
     const getCurrentTrack = useCallback(async () => {
         if (!accessToken) {
@@ -103,38 +138,15 @@ const Player = () => {
                 setProgressMs(data.progress_ms);
                 setDurationMs(data.item.duration_ms);
                 setIsPlaying(data.is_playing);
-                console.log("Player: Piste actuelle récupérée", data.item);
             }
         } catch (error) {
             console.error("Erreur lors de la récupération de la piste actuelle:", error);
         }
     }, [accessToken]);
 
-    const getLastPlayedTrack = useCallback(async () => {
-        try {
-            const response = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=1', {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            });
-
-            if (response.status === 429) {
-                const retryAfter = parseInt(response.headers.get('Retry-After'), 10) * 1000;
-                setTimeout(getLastPlayedTrack, retryAfter);
-            } else {
-                const data = await response.json();
-                if (data.items && data.items.length > 0) {
-                    setLastPlayedTrack(data.items[0].track);
-                }
-            }
-        } catch (error) {
-            console.error("Erreur lors de la récupération de la dernière piste écoutée:", error);
-        }
-    }, [accessToken]);
-
     useEffect(() => {
-        console.log("Player: accessToken", accessToken);
         if (accessToken) {
             getCurrentTrack();
-            // getLastPlayedTrack();
         }
     }, [accessToken, getCurrentTrack]);
 
@@ -146,28 +158,75 @@ const Player = () => {
     };
 
     const controlPlayback = async (action) => {
-        const endpoint = {
-            play: 'https://api.spotify.com/v1/me/player/play',
-            pause: 'https://api.spotify.com/v1/me/player/pause',
-            next: 'https://api.spotify.com/v1/me/player/next'
-        }[action];
+        let endpoint;
+        let method = 'PUT';
+
+        switch (action) {
+            case 'play':
+            case 'pause':
+                endpoint = `https://api.spotify.com/v1/me/player/${action}`;
+                break;
+            case 'next':
+            case 'previous':
+                endpoint = `https://api.spotify.com/v1/me/player/${action}`;
+                method = 'POST';
+                break;
+            default:
+                console.error('Action non reconnue:', action);
+                return;
+        }
 
         try {
-            const method = action === 'next' ? 'POST' : 'PUT';
-
             await fetch(endpoint, {
                 method: method,
                 headers: {
                     Authorization: "Bearer " + accessToken,
                 },
-                body: action === 'next' ? null : JSON.stringify({})
+                body: method === 'PUT' ? JSON.stringify({}) : null
             });
 
             if (action === 'play' || action === 'next') setIsPlaying(true);
             if (action === 'pause') setIsPlaying(false);
+
             getCurrentTrack();
         } catch (error) {
             console.error("Erreur :", error);
+        }
+    };
+
+    const toggleShuffle = async () => {
+        try {
+            await fetch(`https://api.spotify.com/v1/me/player/shuffle?state=${!isShuffle}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                }
+            });
+            setIsShuffle(!isShuffle);
+        } catch (error) {
+            console.error("Erreur lors du changement du mode shuffle :", error);
+        }
+    };
+
+    const replayCurrentTrack = async () => {
+        if (!currentTrack) return;
+
+        try {
+            await fetch(`https://api.spotify.com/v1/me/player/seek?position_ms=0`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: "Bearer " + accessToken
+                }
+            });
+
+            await fetch(`https://api.spotify.com/v1/me/player/play`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: "Bearer " + accessToken
+                }
+            });
+        } catch (error) {
+            console.error("Erreur lors de la reprise de la piste :", error);
         }
     };
 
@@ -180,33 +239,34 @@ const Player = () => {
         return cleanedLyrics;
     };
 
-    const fetchLyrics = async (trackName, artistName) => {
+    const fetchLyrics = useCallback(async (trackName, artistName) => {
         const encodedTrackName = encodeURIComponent(trackName);
         const encodedArtistName = encodeURIComponent(artistName);
         const url = `https://api.musixmatch.com/ws/1.1/matcher.lyrics.get?q_track=${encodedTrackName}&q_artist=${encodedArtistName}&apikey=${musixAPI}`;
+
         try {
             const response = await fetch(url);
             if (!response.ok) {
-                throw new Error(`Erreur API Musixmatch: ${response.status}`);
+                throw new Error(`API Musixmatch Error: ${response.status}`);
             }
             const data = await response.json();
             if (data.message.body && data.message.body.lyrics) {
-                const cleanedLyrics = cleanLyrics(data.message.body.lyrics.lyrics_body);
-                setLyrics(cleanedLyrics);
+                const lyricsBody = data.message.body.lyrics.lyrics_body;
+                setLyrics(cleanLyrics(lyricsBody));
             } else {
                 setLyrics('Aucune parole trouvée.');
             }
         } catch (error) {
-            console.error("Erreur lors de la récupération des paroles :", error);
-            setLyrics('Erreur lors de la récupération des paroles.');
+            console.error("Error fetching lyrics:", error);
+            setLyrics('Error fetching lyrics.');
         }
-    };
+    }, [musixAPI]);
 
     useEffect(() => {
         if (currentTrack) {
-            fetchLyrics(currentTrack.name, currentTrack.artists[0].name);
+            fetchLyrics(currentTrack.name, currentTrack.artists.map((artist) => artist.name).join(", "));
         }
-    }, [currentTrack]);
+    }, [currentTrack, fetchLyrics]);
 
     const startTimer = () => {
         if (!intervalId) {
@@ -274,7 +334,7 @@ const Player = () => {
                                 src={(currentTrack || lastPlayedTrack)?.album?.images[0]?.url}
                                 alt={(currentTrack || lastPlayedTrack)?.name}
                                 style={{ boxShadow: isExpanded ? `0px 12px 70px 0px ${boxShadowColor}` : 'none' }}
-                            />                           
+                            />
                             <div className="player-content">
                                 <p>{(currentTrack || lastPlayedTrack)?.name}</p>
                                 <p>{(currentTrack || lastPlayedTrack)?.artists?.map(artist => artist.name).join(", ")}</p>
@@ -282,15 +342,23 @@ const Player = () => {
                         </>
                     ) : <p>Aucune piste en cours</p>}
                 </div>
-                <div className="bouton-wrapper">
-                    <button className="cta-bouton" onClick={() => controlPlayback('previous')}>
-                        <img src={Previous} alt="Previous" />
+                <div className="cta-wrapper">
+                    <button className="aleatoire-bouton" onClick={toggleShuffle}>
+                        <img src={Aleatoire} alt="Aleatoire" />
                     </button>
-                    <button className="pauseplay-bouton" onClick={() => controlPlayback(isPlaying ? 'pause' : 'play')}>
-                        {isPlaying ? <img src={Pause} alt="Pause" /> : <img src={Play} alt="Play" />}
-                    </button>
-                    <button className="cta-bouton" onClick={() => controlPlayback('next')}>
-                        <img src={Next} alt="Next" />
+                    <div className="bouton-wrapper">
+                        <button className="cta-bouton" onClick={() => controlPlayback('previous')}>
+                            <img src={Previous} alt="Previous" />
+                        </button>
+                        <button className="pauseplay-bouton" onClick={() => controlPlayback(isPlaying ? 'pause' : 'play')}>
+                            {isPlaying ? <img src={Pause} alt="Pause" /> : <img src={Play} alt="Play" />}
+                        </button>
+                        <button className="cta-bouton" onClick={() => controlPlayback('next')}>
+                            <img src={Next} alt="Next" />
+                        </button>
+                    </div>
+                    <button className="list-bouton" onClick={replayCurrentTrack}>
+                        <img src={Restart} alt="Restart" />
                     </button>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import "swiper/swiper-bundle.css";
 import "../Swiper.scss";
 import { useUserContext } from "../../config/UserContext";
 
-function Latest() {
+const Latest = () => {
   const [newReleases, setNewReleases] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,6 +49,23 @@ function Latest() {
     })();
   }, [accessToken]);
 
+  const playAlbum = async (albumUri) => {
+    if (!accessToken) return;
+
+    try {
+      await fetch('https://api.spotify.com/v1/me/player/play', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ context_uri: albumUri })
+      });
+    } catch (error) {
+      console.error("Erreur lors de la lecture de l'album :", error);
+    }
+  };
+
   return (
     <div className="slider-wrapper">
       <Swiper className={loading ? "" : "swiper-fade"}
@@ -69,23 +86,23 @@ function Latest() {
       >
         {loading
           ? Array(5)
-              .fill(0)
-              .map((_, idx) => (
-                <SwiperSlide key={idx}>
-                  <div className="squelette-image"></div>
-                  <div className="squelette-text"></div>
-                  <div className="squelette-text-second"></div>
-                </SwiperSlide>
-              ))
-          : newReleases.map((album, index) => (
-              <SwiperSlide key={index}>
-                <img src={album.images[0].url} alt="" />
-                <div className="slider-wrapper-content">
-                  <p className="artiste-album">{album.name}</p>
-                  <p className="artiste-nom">{album.artists[0].name}</p>
-                </div>
+            .fill(0)
+            .map((_, idx) => (
+              <SwiperSlide key={idx}>
+                <div className="squelette-image"></div>
+                <div className="squelette-text"></div>
+                <div className="squelette-text-second"></div>
               </SwiperSlide>
-            ))}
+            ))
+          : newReleases.map((album, index) => (
+            <SwiperSlide key={index} onClick={() => playAlbum(album.uri)}>
+              <img src={album.images[0].url} alt="" />
+              <div className="slider-wrapper-content">
+                <p className="artiste-album">{album.name}</p>
+                <p className="artiste-nom">{album.artists[0].name}</p>
+              </div>
+            </SwiperSlide>
+          ))}
       </Swiper>
     </div>
   );

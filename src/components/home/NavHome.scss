@@ -1,11 +1,3 @@
-$primary-white: var(--primary-white);
-$secondary-white: var(--secondary-white);
-$primary-black: var(--primary-black);
-$secondary-black: var(--secondary-black);
-$primary-purple: var(--primary-purple);
-$secondary-purple: var(--secondary-purple);
-$primary-font: var(--primary-font);
-
 header {
   width: 100%;
   z-index: 999;
@@ -23,8 +15,8 @@ header {
       gap: 15px;
       align-items: center;
       .navbar-logo {
-        height: 40px;
-        width: 40px;
+        height: 45px;
+        width: 45px;
         border-radius: 50%;
         object-fit: cover;
         aspect-ratio: 1/1;
@@ -49,45 +41,11 @@ header {
     }
 
     .navbar-icon-wrapper {
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
       svg {
         width: 24px;
         height: 24px;
-        color: $primary-white;
+        color: var(--primary-white);
       }
-      .search-container {
-        position: relative;
-        .search-wrapper-full {
-          height: 100vh;
-          position: absolute;
-          z-index: 99999;
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: var(--primary-black);
-          .search-input {
-            // position: absolute;
-            // top: -5px;
-            // left: 50%;
-            // transform: translateX(-50%);
-            padding: 5px;
-            border-radius: 5px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-          }
-          
-          &:hover .search-input, 
-          .search-input:focus {
-            opacity: 1;
-            visibility: visible;
-          }
-        }
-      }
-
       .notification-icon {
         cursor: pointer;
       }

@@ -59,20 +59,45 @@ const Library = () => {
   const filteredPlaylists =
     playlists.length > 0
       ? playlists
-          .filter((playlist) =>
-            playlist.name.toLowerCase().includes(searchTerm)
-          )
-          .sort((a, b) => {
-            if (sortOrder === "name") {
-              return a.name.localeCompare(b.name);
-            }
-            return 0;
-          })
+        .filter((playlist) =>
+          playlist.name.toLowerCase().includes(searchTerm)
+        )
+        .sort((a, b) => {
+          if (sortOrder === "name") {
+            return a.name.localeCompare(b.name);
+          }
+          return 0;
+        })
       : [];
 
   if (!playlists) {
     return <main>Loading playlists...</main>;
   }
+
+  const playPlaylist = async (playlistUri) => {
+    if (!userProfile || !userProfile.accessToken) {
+      console.log("AccessToken not found. User needs to login.");
+      return;
+    }
+
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me/player/play', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${userProfile.accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ context_uri: playlistUri })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start playback");
+      }
+
+    } catch (error) {
+      console.error("Erreur lors de la lecture de la playlist:", error);
+    }
+  };
 
   return (
     <main>
@@ -90,7 +115,7 @@ const Library = () => {
               d="M231.65,194.55,198.46,36.75a16,16,0,0,0-19-12.39L132.65,34.42a16.08,16.08,0,0,0-12.3,19l33.19,157.8A16,16,0,0,0,169.16,224a16.25,16.25,0,0,0,3.38-.36l46.81-10.06A16.09,16.09,0,0,0,231.65,194.55ZM136,50.15c0-.06,0-.09,0-.09l46.8-10,3.33,15.87L139.33,66Zm6.62,31.47,46.82-10.05,3.34,15.9L146,97.53Zm6.64,31.57,46.82-10.06,13.3,63.24-46.82,10.06ZM216,197.94l-46.8,10-3.33-15.87L212.67,182,216,197.85C216,197.91,216,197.94,216,197.94ZM104,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,104,32ZM56,48h48V64H56Zm0,32h48v96H56Zm48,128H56V192h48v16Z"
             ></path>
           </svg>
-          <h1>My library, {userProfile?.display_name}</h1>
+          <h1>Your library</h1>
         </div>
         <div className="input-wrapper">
           <input
@@ -99,22 +124,25 @@ const Library = () => {
             value={searchTerm}
             onChange={handleSearchChange}
           />
-          <select value={sortOrder} onChange={handleSortChange}>
-            <option value="default">Défaut</option>
-            <option value="name">Trier par nom</option>
-          </select>
         </div>
+        <select value={sortOrder} onChange={handleSortChange}>
+          <option value="default">Défaut</option>
+          <option value="name">Trier par nom</option>
+        </select>
         <div className="playlist-wrapper">
           {filteredPlaylists.map((playlist) => (
-            <div key={playlist.id} className="playlist-content" onClick={() => handlePlaylistClick(playlist.id)}>
-              <div className="playlist-infos">
+            <div key={playlist.id} className="playlist-content">
+              <div className="playlist-list" onClick={() => handlePlaylistClick(playlist.id)}>
                 <img
                   src={playlist.images[0]?.url}
                   alt={`${playlist.name} cover`}
                 />
                 <p>{playlist.name}</p>
               </div>
-              <button className="cta-bouton">
+              <button className="cta-bouton" onClick={(e) => {
+                e.stopPropagation();
+                playPlaylist(playlist.uri);
+              }}>
                 <img src={Play} alt="Play" />
               </button>
             </div>

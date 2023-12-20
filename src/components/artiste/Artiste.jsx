@@ -1,104 +1,61 @@
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useParams } from "react-router-dom";
+import { useUserContext } from "../config/UserContext";
 import "./Artiste.scss";
 
 const Artiste = () => {
-  const [nomArtiste, setNomArtiste] = useState("");
-  const clientId = "5b3a9581c276435d901439ef12ed7fea";
-  const clientSecret = "f59b7f4d04394c2ab79b8a19d34cb72e";
+  const { userProfile } = useUserContext();
+  const accessToken = userProfile?.accessToken;
   const { id } = useParams();
-  const [genres, setGenres] = useState([]);
-  const [imageArtiste, setImageArtiste] = useState("");
-  const [followersArtiste, setFollowers] = useState("");
-
-  const obtenirJetonAcces = async () => {
-    const reponse = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: "Basic " + btoa(clientId + ":" + clientSecret),
-      },
-      body: "grant_type=client_credentials",
-    });
-    if (!reponse.ok) {
-      throw new Error("Failed to fetch access token");
-    }
-    const donnees = await reponse.json();
-    return donnees.access_token;
-  };
-
-  const obtenirInfoArtiste = async (idArtiste, jetonAcces) => {
-    const reponse = await fetch(
-      `https://api.spotify.com/v1/artists/${idArtiste}`,
-      {
-        headers: {
-          Authorization: "Bearer " + jetonAcces,
-        },
-      }
-    );
-    if (!reponse.ok) {
-      throw new Error(`Failed to fetch artist info for id: ${idArtiste}`);
-    }
-    const donnees = await reponse.json();
-    setGenres(donnees.genres || []);
-    return donnees;
-  };
+  const [artiste, setArtiste] = useState(null);
 
   useEffect(() => {
-    if (!id) return;
+    const fetchArtiste = async () => {
+      if (!id || !accessToken) return;
 
-    const chercherArtiste = async () => {
       try {
-        const jetonAcces = await obtenirJetonAcces();
-        const infoArtiste = await obtenirInfoArtiste(id, jetonAcces);
-        setNomArtiste(infoArtiste.name);
-        setFollowers(infoArtiste.followers.total);
-        setImageArtiste(infoArtiste.images[0]?.url);
+        const response = await fetch(`https://api.spotify.com/v1/artists/${id}`, {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch artist info for id: ${id}`);
+        }
+
+        const data = await response.json();
+        setArtiste(data);
       } catch (error) {
         console.error("Error fetching artist info:", error);
       }
     };
 
-    chercherArtiste();
-  }, [id]);
+    fetchArtiste();
+  }, [id, accessToken]);
 
   return (
     <main>
       <Suspense fallback={<div>Loading artist details...</div>}>
-        <div className="artiste-wrapper">
-          <div className="artiste-content">
-            {imageArtiste ? (
-              <img src={imageArtiste} alt={nomArtiste} width="50" height="50" />
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-                {/* ... */}
-              </svg>
-            )}
-            <div className="artiste-test">
-              <h1>{nomArtiste}</h1>
-              <h1>{followersArtiste}</h1>
+        {artiste && (
+          <div className="artiste-wrapper">
+            <div className="artiste-content">
+              {artiste.images[0]?.url ? (
+                <img src={artiste.images[0].url} alt={artiste.name} width="50" height="50" />
+              ) : (
+                <div>No Image Available</div>
+              )}
+              <div className="artiste-info">
+                <h1>{artiste.name}</h1>
+                <p>{artiste.followers.total} followers</p>
+                <div className="genres">
+                  {artiste.genres.map((genre, index) => (
+                    <span key={index}>{genre}{index < artiste.genres.length - 1 ? ', ' : ''}</span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="artiste-infos">
-            {genres &&
-              genres.map((genre, index) => (
-                <p key={index}>
-                  {genre}
-                  {index < genres.length - 1 ? ", " : ""}
-                </p>
-              ))}
-          </div>
-
-          <div className="followers"></div>
-        </div>
+        )}
       </Suspense>
-      <h2>Popularity</h2>
-
-      <div className="artiste-main">
-        <h2>Latest releases</h2>
-        <p>Gazoooo</p>
-      </div>
     </main>
   );
 };

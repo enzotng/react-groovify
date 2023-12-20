@@ -7,9 +7,8 @@ import { useUserContext } from "../../config/UserContext";
 const TopHits = () => {
     const [topFranceTracks, setTopFranceTracks] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { setTrackToPlay } = useUserContext();
     const { userProfile } = useUserContext();
-    const accessToken = userProfile ? userProfile.accessToken : null;
+    const accessToken = userProfile?.accessToken;
     const playlistId = '37i9dQZEVXbIPWwFssbupI';
 
     useEffect(() => {
@@ -42,8 +41,21 @@ const TopHits = () => {
         fetchPlaylistTracks();
     }, [accessToken]);
 
-    const playSelectedTrack = (track) => {
-        setTrackToPlay(track);
+    const playTrack = async (trackUri) => {
+        if (!accessToken) return;
+
+        try {
+            await fetch('https://api.spotify.com/v1/me/player/play', {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ uris: [trackUri] })
+            });
+        } catch (error) {
+            console.error("Erreur lors de la lecture de la piste :", error);
+        }
     };
 
     return (
@@ -65,7 +77,7 @@ const TopHits = () => {
                         </SwiperSlide>
                     ))
                     : topFranceTracks.map((track, index) => (
-                        <SwiperSlide className="top-france" key={index} onClick={() => playSelectedTrack(track)}>
+                        <SwiperSlide className="top-france" key={index} onClick={() => playTrack(track.uri)}>
                             <img src={track.album.images[0]?.url} alt={track.name} />
                             <div className="slider-wrapper-content">
                                 <p className="artiste-album">{track.name}</p>

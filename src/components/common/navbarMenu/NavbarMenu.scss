@@ -1,11 +1,3 @@
-$primary-white: var(--primary-white);
-$secondary-white: var(--secondary-white);
-$primary-black: var(--primary-black);
-$secondary-black: var(--secondary-black);
-$primary-purple: var(--primary-purple);
-$secondary-purple: var(--secondary-purple);
-$primary-font: var(--primary-font);
-
 .nav-footer-wrapper {
   width: 100%;
   position: fixed;
@@ -31,9 +23,9 @@ $primary-font: var(--primary-font);
           justify-content: center;
           align-items: center;
           gap: 2.5px;
-          transition: all .3s ease-in;
+          transition: all 0.3s ease-in;
           &.active {
-            color: $primary-white;
+            color: var(--primary-white);
           }
         }
         img {
@@ -41,7 +33,7 @@ $primary-font: var(--primary-font);
           z-index: 999;
         }
         span {
-          font-size: 12px;
+          font-size: 0.75rem;
           display: none;
         }
       }
