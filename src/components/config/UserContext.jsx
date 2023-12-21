@@ -8,10 +8,10 @@ export const UserProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
 
   const musixAPI = import.meta.env.VITE_MUSIXMATCH_API_KEY;
-  // const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-  // const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
-  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID_2;
-  const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET_2;
+  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+  const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
+  // const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID_2;
+  // const clientSecret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET_2;
 
   useEffect(() => {
     const userProfileData = localStorage.getItem("userProfile");
