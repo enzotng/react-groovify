@@ -103,7 +103,7 @@ const Artiste = () => {
               <div className="artiste-playlist">
                 <h2>More albums by {artiste.name}</h2>
                 {albums.map(album => (
-                  <div key={album.id}>
+                  <div className="artiste-playlist-content" key={album.id}>
                     <img src={album.images[0]?.url} alt={album.name} />
                     <p>{album.name}</p>
                   </div>

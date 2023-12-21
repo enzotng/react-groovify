@@ -8,7 +8,7 @@ import "react-spotify-auth/dist/index.css";
 
 import { useUserContext } from "../config/UserContext";
 
-const redirectUri = "http://localhost:3001/callback";
+const redirectUri = "http://localhost:5173/callback";
 
 const Auth = () => {
   const { setUserProfile, clientId } = useUserContext();
