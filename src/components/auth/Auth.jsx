@@ -8,7 +8,7 @@ import "react-spotify-auth/dist/index.css";
 
 import { useUserContext } from "../config/UserContext";
 
-const redirectUri = "https://6e10-193-51-24-13.ngrok-free.app/callback";
+const redirectUri = "https://84ec-2a01-e0a-b47-8330-a4ad-9556-353c-fcbe.ngrok-free.app/callback";
 
 const Auth = () => {
   const { setUserProfile, clientId } = useUserContext();
@@ -36,13 +36,23 @@ const Auth = () => {
 
   const onAccessToken = async (accessToken) => {
     try {
+      await fetch('https://back.enzotang.fr/storeToken', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ accessToken }),
+      });
+  
       const userProfile = await fetchUserProfile(accessToken);
-      setUserProfile({ ...userProfile, accessToken });
-      navigate("/home");
+      if (userProfile) {
+        setUserProfile({ ...userProfile, accessToken });
+        navigate("/home");
+      }
     } catch (error) {
       console.error("Erreur:", error);
     }
-  };
+  };  
 
   return (
     <div className="auth-container">

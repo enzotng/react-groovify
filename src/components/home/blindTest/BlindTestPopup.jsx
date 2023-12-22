@@ -6,7 +6,7 @@ const Home = () => {
     return (
         <>
             <div className="blindtest-wrapper">
-                <h2>Wannay play a blindtest ?</h2>
+                <h2>Want to play a blind test?</h2>
                 <Link to="/blindtest">
                     <img src={ArrowBack} alt="Icone Arrow" />
                 </Link>

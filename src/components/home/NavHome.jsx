@@ -5,7 +5,7 @@ import { useUserContext } from "../config/UserContext";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { userProfile } = useUserContext();
+  const { userProfile, profileImage } = useUserContext();
 
   const handleScroll = () => {
     if (window.scrollY > 0) {
@@ -22,17 +22,28 @@ const Navbar = () => {
     };
   }, []);
 
+  const getGreetingMessage = () => {
+    const hours = new Date().getHours();
+    if (hours < 12) {
+      return "Good Morning 👋";
+    } else if (hours < 18) {
+      return "Good Afternoon 👋";
+    } else {
+      return "Good Evening 👋";
+    }
+  };  
+
   return (
     <header style={{ borderBottom: isScrolled ? "1px solid rgba(255, 255, 255, 0.05)" : "none" }}>
       <nav className="navbar">
         <div className="navbar-user">
-        <img
+          <img
             className="navbar-logo"
-            src={userProfile && userProfile.images && userProfile.images[1] ? userProfile.images[1].url : ""}
-            alt="User"
+            src={profileImage || (userProfile?.images?.length > 1 ? userProfile.images[1].url : "default-profile-image-url")}
+            alt={`Profil de ${userProfile?.display_name || "Utilisateur"}`}
           />
           <div className="navbar-user-text">
-            <p className="thin">Good Morning 👋</p>
+            <p className="thin">{getGreetingMessage()}</p>
             <p className="gras">
               {userProfile ? userProfile.display_name : "Loading profile..."}
             </p>

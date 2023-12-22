@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../config/UserContext";
+import PauseButton from "../../assets/icon/pause.svg";
 import Play from "../../assets/icon/play.svg";
 import LibraryDetails from "./LibraryDetails";
 import "./Library.scss";
@@ -10,6 +11,7 @@ const Library = () => {
   const [playlists, setPlaylists] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("default");
+  const [playingPlaylistUri, setPlayingPlaylistUri] = useState(null);
   const navigate = useNavigate();
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
 
@@ -48,9 +50,9 @@ const Library = () => {
     }
   }, [userProfile]);
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value.toLowerCase());
-  };
+  const handleSearchChange = (value) => {
+    setSearchTerm(value.toLowerCase());
+  };  
 
   const handleSortChange = (e) => {
     setSortOrder(e.target.value);
@@ -59,15 +61,15 @@ const Library = () => {
   const filteredPlaylists =
     playlists.length > 0
       ? playlists
-        .filter((playlist) =>
-          playlist.name.toLowerCase().includes(searchTerm)
-        )
-        .sort((a, b) => {
-          if (sortOrder === "name") {
-            return a.name.localeCompare(b.name);
-          }
-          return 0;
-        })
+          .filter((playlist) =>
+            playlist.name.toLowerCase().includes(searchTerm)
+          )
+          .sort((a, b) => {
+            if (sortOrder === "name") {
+              return a.name.localeCompare(b.name);
+            }
+            return 0;
+          })
       : [];
 
   if (!playlists) {
@@ -81,19 +83,21 @@ const Library = () => {
     }
 
     try {
-      const response = await fetch('https://api.spotify.com/v1/me/player/play', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${userProfile.accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ context_uri: playlistUri })
-      });
-
+      const response = await fetch(
+        "https://api.spotify.com/v1/me/player/play",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${userProfile.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ context_uri: playlistUri }),
+        }
+      );
+      setPlayingPlaylistUri(playlistUri);
       if (!response.ok) {
         throw new Error("Failed to start playback");
       }
-
     } catch (error) {
       console.error("Erreur lors de la lecture de la playlist:", error);
     }
@@ -120,34 +124,56 @@ const Library = () => {
         <div className="input-wrapper">
           <input
             type="text"
-            placeholder="Rechercher une playlist..."
+            placeholder="Search a playlist..."
             value={searchTerm}
-            onChange={handleSearchChange}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
+          {searchTerm && (
+            <svg
+              className="clear-input"
+              onClick={() => handleSearchChange("")}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 256 256"
+            >
+              <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+            </svg>
+          )}
         </div>
         <select value={sortOrder} onChange={handleSortChange}>
-          <option value="default">Défaut</option>
-          <option value="name">Trier par nom</option>
+          <option value="default">Relevance</option>
+          <option value="name">Sort by name (A to Z)</option>
         </select>
         <div className="playlist-wrapper">
           {filteredPlaylists.map((playlist) => (
             <div key={playlist.id} className="playlist-content">
-              <div className="playlist-list" onClick={() => handlePlaylistClick(playlist.id)}>
+              <div
+                className="playlist-list"
+                onClick={() => handlePlaylistClick(playlist.id)}
+              >
                 <img
                   src={playlist.images[0]?.url}
                   alt={`${playlist.name} cover`}
                 />
                 <p>{playlist.name}</p>
               </div>
-              <button className="cta-bouton" onClick={(e) => {
-                e.stopPropagation();
-                playPlaylist(playlist.uri);
-              }}>
-                <img src={Play} alt="Play" />
+              <button
+                className="cta-bouton"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playPlaylist(playlist.uri);
+                }}
+              >
+              <img 
+                src={playingPlaylistUri === playlist.uri ? PauseButton : Play} 
+                alt={playingPlaylistUri === playlist.uri ? 'Pause' : 'Play'} 
+              />
               </button>
             </div>
           ))}
-          {selectedPlaylistId && <LibraryDetails playlistId={selectedPlaylistId} />}
+          {selectedPlaylistId && (
+            <LibraryDetails playlistId={selectedPlaylistId} />
+          )}
         </div>
       </div>
     </main>

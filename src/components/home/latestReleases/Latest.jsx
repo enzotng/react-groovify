@@ -96,7 +96,7 @@ const Latest = () => {
             ))
           : newReleases.map((album, index) => (
             <SwiperSlide key={index} onClick={() => playAlbum(album.uri)}>
-              <img src={album.images[0].url} alt="" />
+              <img src={album.images[0]?.url} alt={album.name} />
               <div className="slider-wrapper-content">
                 <p className="artiste-album">{album.name}</p>
                 <p className="artiste-nom">{album.artists[0].name}</p>

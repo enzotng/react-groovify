@@ -12,6 +12,8 @@ import Artiste from "./components/artiste/Artiste";
 import Auth from "./components/auth/Auth";
 import Player from './components/common/player/Player';
 import { UserProvider, useUserContext } from "./components/config/UserContext";
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+defineCustomElements(window);
 import "./App.scss";
 
 const ProtectedRoute = ({ children }) => {

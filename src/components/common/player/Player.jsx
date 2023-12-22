@@ -9,6 +9,9 @@ import Restart from '../../../assets/icon/restart.svg';
 import CloseBouton from '../../../assets/icon/c-vector-chevron.svg';
 import ShareBouton from '../../../assets/icon/share.svg';
 import { Share } from '@capacitor/share';
+import { Toast } from '@capacitor/toast';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+defineCustomElements(window);
 import { useUserContext } from '../../config/UserContext';
 import './Player.scss';
 
@@ -167,7 +170,6 @@ const Player = ({ externalTrack }) => {
     }, [accessToken]);
 
     useEffect(() => {
-        console.log('Nouvelle piste reçue:', externalTrack);
         if (externalTrack) {
             playExternalTrack(externalTrack);
         }
@@ -225,11 +227,23 @@ const Player = ({ externalTrack }) => {
                     Authorization: "Bearer " + accessToken,
                 }
             });
-            setIsShuffle(!isShuffle);
+    
+            const newShuffleState = !isShuffle;
+            setIsShuffle(newShuffleState);
+    
+            await Toast.show({
+                text: newShuffleState ? 'Mode aléatoire activé' : 'Mode aléatoire désactivé',
+                duration: 'medium',
+            });
+    
         } catch (error) {
             console.error("Erreur lors du changement du mode shuffle :", error);
+            await Toast.show({
+                text: 'Erreur lors du changement du mode shuffle',
+                duration: 'medium',
+            });
         }
-    };
+    };    
 
     const replayCurrentTrack = async () => {
         if (!currentTrack) return;
@@ -266,7 +280,6 @@ const Player = ({ externalTrack }) => {
         const encodedTrackName = encodeURIComponent(trackName);
         const encodedArtistName = encodeURIComponent(artistName);
         const url = `https://api.musixmatch.com/ws/1.1/matcher.lyrics.get?q_track=${encodedTrackName}&q_artist=${encodedArtistName}&apikey=${musixAPI}`;
-
         try {
             const response = await fetch(url);
             if (!response.ok) {
@@ -277,7 +290,7 @@ const Player = ({ externalTrack }) => {
                 const lyricsBody = data.message.body.lyrics.lyrics_body;
                 setLyrics(cleanLyrics(lyricsBody));
             } else {
-                setLyrics('Aucune parole trouvée.');
+                setLyrics('No lyrics found.');
             }
         } catch (error) {
             console.error("Error fetching lyrics:", error);
@@ -364,7 +377,7 @@ const Player = ({ externalTrack }) => {
                                 <p>{(currentTrack)?.artists?.map(artist => artist.name).join(", ")}</p>
                             </div>
                         </>
-                    ) : <p>Aucune piste en cours</p>}
+                    ) : <p>No current tracks</p>}
                 </div>
                 <div className="cta-wrapper">
                     <button className="aleatoire-bouton" onClick={toggleShuffle}>
@@ -394,7 +407,7 @@ const Player = ({ externalTrack }) => {
                 <span>{calculateRemainingTime()}</span>
             </div>
             <div className="parole-container" style={{ backgroundColor: backgroundColor2 }}>
-                <p>Paroles</p>
+                <p>Lyrics</p>
                 <div dangerouslySetInnerHTML={{ __html: lyrics }} />
             </div>
         </div>

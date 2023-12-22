@@ -15,7 +15,6 @@ const Home = () => {
         <div className="homeWrapper">
           <section className="c-section">
             <article className="c-article">
-              <h1>Groovify's Blind Test</h1>
               <BlindTestPopup />
             </article>
             <article className="c-article">

@@ -10,18 +10,22 @@
     .tabs {
       display: flex;
       gap: 10px;
+      justify-content: space-between;
 
       button {
-        background-color: var(--primary-black);
+        background: linear-gradient(
+          109.6deg,
+          rgb(78, 62, 255) 11.2%,
+          rgb(164, 69, 255) 91.1%
+        );
         border: none;
         padding: 10px 20px;
+        font-size: 0.875rem;
         cursor: pointer;
         font-family: var(--primary-font);
         transition: all 0.3s ease;
         color: var(--primary-white);
         border-radius: 20px;
-        border: 1px solid var(--primary-purple);
-
         &.active {
           background-color: var(--primary-purple);
           border: 1px solid var(--primary-black);
@@ -31,17 +35,40 @@
 
     .tabs-content-wrapper {
       overflow: hidden;
-
-      .tab-content {
+      .notification-wrapper-item {
         display: flex;
-        transition: transform 0.5s ease;
-
-        &.Songs {
-          transform: translateX(0);
-        }
-
-        &.Podcasts {
-          transform: translateX(-100%);
+        flex-direction: column;
+        gap: 20px;
+        .notification-item {
+          display: flex;
+          gap: 20px;
+          align-items: center;
+          img {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+            aspect-ratio: 1/1;
+          }
+          .notification-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            .notification-name {
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              text-transform: uppercase;
+              font-size: 0.875rem;
+              font-weight: bold;
+            }
+            .notification-artist {
+              color: var(--secondary-white);
+            }
+          }
         }
       }
     }

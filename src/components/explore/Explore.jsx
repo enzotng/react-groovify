@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useUserContext } from '../config/UserContext';
+import { useUserContext } from "../config/UserContext";
+import PauseButton from "../../assets/icon/pause.svg";
 import PlayButton from "../../assets/icon/play.svg";
 import "./Explore.scss";
 
@@ -11,7 +12,7 @@ const Explore = () => {
   const [artistes, setArtistes] = useState([]);
   const [titres, setTitres] = useState([]);
   const [albums, setAlbums] = useState([]);
-  const [genres, setGenres] = useState([]);
+  const [playingTrackUri, setPlayingTrackUri] = useState(null);
   const [ongletActif, setOngletActif] = useState("resultat");
   const [idArtisteSelectionne, setIdArtisteSelectionne] = useState(null);
   const navigate = useNavigate();
@@ -22,7 +23,9 @@ const Explore = () => {
 
     try {
       const reponse = await fetch(
-        `https://api.spotify.com/v1/search?q=${encodeURIComponent(recherche)}&type=track,album,artist`,
+        `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+          recherche
+        )}&type=track,album,artist`,
         {
           headers: {
             Authorization: "Bearer " + accessToken,
@@ -72,7 +75,6 @@ const Explore = () => {
     chercherSurSpotify();
   }, [recherche, chercherSurSpotify]);
 
-
   useEffect(() => {
     obtenirAlbumsArtiste(idArtisteSelectionne);
   }, [idArtisteSelectionne]);
@@ -106,20 +108,62 @@ const Explore = () => {
   const playContent = async (uri, isAlbum) => {
     if (!accessToken) return;
 
-    let endpoint = 'https://api.spotify.com/v1/me/player/play';
+    let endpoint = "https://api.spotify.com/v1/me/player/play";
     let body = isAlbum ? { context_uri: uri } : { uris: [uri] };
 
     try {
       await fetch(endpoint, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
+      setPlayingTrackUri(uri);
     } catch (error) {
       console.error("Erreur lors de la lecture :", error);
+    }
+  };
+
+  const PLAYLIST_ID = "37i9dQZF1DXcBWIGoYBM5M";
+  const [playlistTracks, setPlaylistTracks] = useState([]);
+  useEffect(() => {
+    const fetchPlaylistTracks = async () => {
+      if (!accessToken) return;
+
+      try {
+        const response = await fetch(
+          `https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`,
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        );
+        const data = await response.json();
+        setPlaylistTracks(data.items);
+      } catch (error) {
+        console.error("Error fetching playlist:", error);
+      }
+    };
+
+    fetchPlaylistTracks();
+  }, [accessToken]);
+
+  const playTrack = async (trackUri) => {
+    if (!accessToken) return;
+
+    try {
+      await fetch("https://api.spotify.com/v1/me/player/play", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uris: [trackUri] }),
+      });
+      setPlayingTrackUri(trackUri);
+    } catch (error) {
+      console.error("Erreur lors de la lecture de la piste :", error);
     }
   };
 
@@ -146,7 +190,7 @@ const Explore = () => {
             type="text"
             value={recherche}
             onChange={(e) => setRecherche(e.target.value)}
-            placeholder="Artistes, Chansons, Albums..."
+            placeholder="Artists, Songs, Albums..."
           />
           {recherche && (
             <svg
@@ -166,19 +210,19 @@ const Explore = () => {
               className={ongletActif === "resultat" ? "tab active" : "tab"}
               onClick={() => setOngletActif("resultat")}
             >
-              Tout
+              Top
             </div>
             <div
               className={ongletActif === "titres" ? "tab active" : "tab"}
               onClick={() => setOngletActif("titres")}
             >
-              Musiques
+              Songs
             </div>
             <div
               className={ongletActif === "artistes" ? "tab active" : "tab"}
               onClick={() => setOngletActif("artistes")}
             >
-              Artistes
+              Artists
             </div>
             <div
               className={ongletActif === "albums" ? "tab active" : "tab"}
@@ -189,29 +233,42 @@ const Explore = () => {
           </div>
         )}
 
-        {ongletActif === "resultat" && (
+        {recherche && ongletActif === "resultat" && (
           <ul>
-            {albums.length > 0 && (
-              <li key={albums[0].id}>
-                <div className="image-wrapper">
-                  <img
-                    src={albums[0].images[0]?.url}
-                    alt={albums[0].name}
-                    width="50"
-                    height="50"
-                  />
-                  <div className="text-content">
-                    <p>{albums[0].name}</p>
-                    <p>{obtenirNomsArtistes(albums[0].artists)}</p>
+            {albums.length > 0 &&
+              albums.map((album, index) => (
+                <li key={index}>
+                  <div className="image-wrapper">
+                    <img
+                      src={album.images[0]?.url}
+                      alt={album.name}
+                      width="50"
+                      height="50"
+                    />
+                    <div className="text-content">
+                      <p>{album.name}</p>
+                      <p>{obtenirNomsArtistes(album.artists)}</p>
+                    </div>
                   </div>
-                </div>
-                <button className="music-link" onClick={() => playContent(albums[0].uri, true)}>
-                  <img src={PlayButton} alt="Icon Play"></img>
-                </button>
-              </li>
-            )}
+                  <button
+                    className="music-link"
+                    onClick={() => playContent(album.uri, true)}
+                  >
+                    <img
+                      src={
+                        playingTrackUri === album.uri ? PauseButton : PlayButton
+                      }
+                      alt={playingTrackUri === album.uri ? "Pause" : "Play"}
+                    />
+                  </button>
+                </li>
+              ))}
 
-            {[...new Map(titres.map(titre => [obtenirCleUniqueTitre(titre), titre])).values()].map((titre, index) => (
+            {[
+              ...new Map(
+                titres.map((titre) => [obtenirCleUniqueTitre(titre), titre])
+              ).values(),
+            ].map((titre, index) => (
               <li key={index}>
                 <div className="image-wrapper">
                   <img
@@ -225,16 +282,23 @@ const Explore = () => {
                     <p>{obtenirNomsArtistes(titre.artists)}</p>
                   </div>
                 </div>
-                <button className="music-link" onClick={() => playContent(titre.uri, false)}>
-                  <img src={PlayButton} alt="Icon Play"></img>
+                <button
+                  className="music-link"
+                  onClick={() => playContent(titre.uri, false)}
+                >
+                  <img
+                    src={
+                      playingTrackUri === titre.uri ? PauseButton : PlayButton
+                    }
+                    alt={playingTrackUri === titre.uri ? "Pause" : "Play"}
+                  />
                 </button>
               </li>
             ))}
           </ul>
         )}
 
-
-        {ongletActif === "titres" && titres.length > 0 && (
+        {recherche && ongletActif === "titres" && titres.length > 0 && (
           <ul>
             {titres.map((titre, index) => (
               <li key={index}>
@@ -251,25 +315,30 @@ const Explore = () => {
                   </div>
                 </div>
 
-                <button className="music-link" onClick={() => playContent(titre.uri, false)}>
-                  <img src={PlayButton} alt="Icon Play"></img>
+                <button
+                  className="music-link"
+                  onClick={() => playContent(titre.uri, false)}
+                >
+                  <img
+                    src={
+                      playingTrackUri === titre.uri ? PauseButton : PlayButton
+                    }
+                    alt={playingTrackUri === titre.uri ? "Pause" : "Play"}
+                  />
                 </button>
               </li>
             ))}
           </ul>
         )}
 
-        {ongletActif === "artistes" && artistesUniques.length > 0 && (
+        {recherche && ongletActif === "artistes" && artistesUniques.length > 0 && (
           <ul>
             {artistesUniques.map((artiste, index) => (
               <Link key={index} to={`/artiste/${artiste.id}`}>
                 <li id="artiste-li">
                   <div className="artiste-resultat">
                     {artiste.images[0] && (
-                      <img
-                        src={artiste.images[0].url}
-                        alt={artiste.name}
-                      />
+                      <img src={artiste.images[0].url} alt={artiste.name} />
                     )}
                     <span>{artiste.name}</span>
                   </div>
@@ -279,8 +348,7 @@ const Explore = () => {
           </ul>
         )}
 
-
-        {ongletActif === "albums" && albums.length > 0 && (
+        {recherche && ongletActif === "albums" && albums.length > 0 && (
           <ul>
             {albums.map((album) => (
               <li key={album.id}>
@@ -297,12 +365,50 @@ const Explore = () => {
                   </div>
                 </div>
 
-                <button className="music-link" onClick={() => playContent(album.uri, true)}>
-                  <img src={PlayButton} alt="Icon Play"></img>
+                <button
+                  className="music-link"
+                  onClick={() => playContent(album.uri, true)}
+                >
+                  <img
+                    src={
+                      playingTrackUri === album.uri ? PauseButton : PlayButton
+                    }
+                    alt={playingTrackUri === album.uri ? "Pause" : "Play"}
+                  />
                 </button>
               </li>
             ))}
           </ul>
+        )}
+
+        {!recherche && (
+          <div className="playlist-today-hits-component">
+            <h2>Today's Top Hits 📅</h2>
+            <div className="playlist-today-hits-wrapper">
+              {playlistTracks.map((item, index) => (
+                <div className="playlist-today-hits-content" key={index}>
+                  <div className="playlist-today-hits-image">
+                    <span className="track-number">{index + 1}</span>
+                    <img
+                      src={item.track.album.images[0].url}
+                      alt={item.track.name}
+                    />
+                    <button onClick={() => playTrack(item.track.uri)}>
+                      <img
+                        src={
+                          playingTrackUri === item.track.uri
+                            ? PauseButton
+                            : PlayButton
+                        }
+                        alt="Play Icon"
+                      />
+                    </button>
+                  </div>
+                  <p>{item.track.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </main>

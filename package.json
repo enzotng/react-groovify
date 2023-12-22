@@ -7,23 +7,30 @@
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js"
   },
   "dependencies": {
     "@capacitor/android": "^5.5.1",
     "@capacitor/app": "5.0.6",
-    "@capacitor/core": "5.5.1",
+    "@capacitor/browser": "^5.1.0",
+    "@capacitor/camera": "^5.0.8",
+    "@capacitor/core": "5.6.0",
     "@capacitor/haptics": "^5.0.6",
     "@capacitor/ios": "^5.6.0",
     "@capacitor/keyboard": "5.0.6",
     "@capacitor/share": "^5.0.6",
     "@capacitor/status-bar": "5.0.6",
+    "@capacitor/storage": "^1.2.5",
     "@capacitor/toast": "^5.0.6",
     "@ionic/pwa-elements": "^3.2.2",
     "@ionic/react": "^7.5.2",
     "@ionic/react-router": "^7.5.2",
     "axios": "^1.5.1",
     "colorthief": "^2.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "js-cookie": "^3.0.5",
     "npm-check-updates": "^16.14.6",
     "prop-types": "^15.8.1",
@@ -32,6 +39,7 @@
     "react-router-dom": "^6.17.0",
     "react-spotify-auth": "^1.4.3",
     "react-swiper": "^0.1.5",
+    "request": "^2.88.2",
     "sass": "^1.69.5",
     "spotify-web-api-js": "^1.5.2",
     "swiper": "^11.0.3",
@@ -49,5 +57,10 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "vite": "^4.5.0"
-  }
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "server.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

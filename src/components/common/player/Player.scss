@@ -11,6 +11,7 @@
   border-radius: 10px;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--tertiary-white);
   gap: 10px;
   transition: all 0.3s;
   .close-button {
@@ -72,8 +73,8 @@
           font-family: var(--primary-font);
           color: var(--primary-white);
           img {
-            width: 15px;
-            height: 15px;
+            width: 12.5px;
+            height: 12.5px;
             aspect-ratio: 1/1;
           }
         }
@@ -194,6 +195,11 @@
           height: 50px;
           border: 1px solid rgba(255, 255, 255, 0.5) !important;
           background: rgba(255, 255, 255, 0.25);
+          img {
+            width: 15px;
+            height: 15px;
+            aspect-ratio: 1/1;
+          }
         }
       }
     }

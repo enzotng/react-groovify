@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useUserContext } from "../config/UserContext";
 import ArrowBack from "../../assets/icon/arrow-back.svg";
-import SearchIcon from '../../assets/icon/search.svg';
-import AleatoireBouton from '../../assets/icon/shuffle.svg';
-import ShareBouton from '../../assets/icon/share.svg';
+import SearchIcon from "../../assets/icon/search.svg";
+import AleatoireBouton from "../../assets/icon/shuffle.svg";
+import ShareBouton from "../../assets/icon/share.svg";
 import Play from "../../assets/icon/play.svg";
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Share } from '@capacitor/share';
-import { Toast } from '@capacitor/toast';
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Share } from "@capacitor/share";
+import { defineCustomElements } from "@ionic/pwa-elements/loader";
+defineCustomElements(window);
 import "./Library.scss";
 
 const LibraryDetails = () => {
@@ -40,7 +40,10 @@ const LibraryDetails = () => {
           const data = await response.json();
           setPlaylistDetails(data);
         } catch (error) {
-          console.error("Erreur lors de la récupération des détails de la playlist:", error);
+          console.error(
+            "Erreur lors de la récupération des détails de la playlist:",
+            error
+          );
         }
       }
     };
@@ -75,13 +78,17 @@ const LibraryDetails = () => {
   }, [playlistId, userProfile]);
 
   const sharePlaylist = async (playlistDetails) => {
-    if (playlistDetails && playlistDetails.external_urls && playlistDetails.external_urls.spotify) {
+    if (
+      playlistDetails &&
+      playlistDetails.external_urls &&
+      playlistDetails.external_urls.spotify
+    ) {
       try {
         await Share.share({
-          title: 'Découvrez cette playlist',
+          title: "Découvrez cette playlist",
           text: `Écoutez "${playlistDetails.name}" sur Spotify!`,
           url: playlistDetails.external_urls.spotify,
-          dialogTitle: 'Partagez cette playlist',
+          dialogTitle: "Partagez cette playlist",
         });
       } catch (error) {
         console.error("Erreur lors du partage de la playlist :", error);
@@ -93,53 +100,41 @@ const LibraryDetails = () => {
 
   const playPlaylist = async () => {
     if (!accessToken || !playlistId) return;
-  
+
     try {
       await fetch(`https://api.spotify.com/v1/me/player/play`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` })
+        body: JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` }),
       });
-  
-      await Haptics.impact({ style: ImpactStyle.Light });
+
+      await Haptics.impact({ style: ImpactStyle.Medium });
       console.log("Vibration haptique déclenchée pour playPlaylist");
     } catch (error) {
       console.error("Erreur lors de la lecture de la playlist:", error);
     }
-  };  
+  };
 
   const playTrack = async (trackUri) => {
     if (!accessToken) return;
-  
+
     try {
       await fetch(`https://api.spotify.com/v1/me/player/play`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ uris: [trackUri] })
+        body: JSON.stringify({ uris: [trackUri] }),
       });
-  
-      await Haptics.impact({ style: ImpactStyle.Light });
+
+      await Haptics.impact({ style: ImpactStyle.Medium });
       console.log("Vibration haptique déclenchée pour playTrack");
     } catch (error) {
       console.error("Erreur lors de la lecture de la piste:", error);
-    }
-  };
-
-  const showHelloToast = async () => {
-    console.log("Tentative d'affichage du toast");
-    try {
-      await Toast.show({
-        text: 'Hello!',
-      });
-      console.log("Toast affiché avec succès");
-    } catch (error) {
-      console.error("Erreur lors de l'affichage du toast:", error);
     }
   };
 
@@ -153,15 +148,21 @@ const LibraryDetails = () => {
             <img src={ArrowBack} alt="Icone Arrow" />
           </Link>
           <img src={SearchIcon} alt="Icone" />
-          <button onClick={showHelloToast}>test toast</button>
         </div>
         <div className="album-playlist-wrapper">
           {playlistDetails ? (
             <>
               <div className="album-playlist-content">
-                <img src={playlistDetails.images[0].url} alt={playlistDetails.name} />
+                <img
+                  src={playlistDetails.images[0].url}
+                  alt={playlistDetails.name}
+                />
                 <div className="album-playlist-infos">
-                  <h2>{playlistDetails ? playlistDetails.name : "Loading playlist name..."}</h2>
+                  <h2>
+                    {playlistDetails
+                      ? playlistDetails.name
+                      : "Loading playlist name..."}
+                  </h2>
                   <div className="album-playlist-more">
                     <span>{playlistDetails.tracks.total} songs</span>
                   </div>
@@ -169,7 +170,10 @@ const LibraryDetails = () => {
                     <button className="aleatoire-bouton">
                       <img src={AleatoireBouton} alt="Aleatoire Bouton" />
                     </button>
-                    <button className="share-bouton" onClick={() => sharePlaylist(playlistDetails)}>
+                    <button
+                      className="share-bouton"
+                      onClick={() => sharePlaylist(playlistDetails)}
+                    >
                       <img src={ShareBouton} alt="Share Bouton" />
                     </button>
                   </div>
@@ -194,16 +198,23 @@ const LibraryDetails = () => {
           {tracks.map((item, index) => (
             <div className="playlist-content" key={index}>
               <div className="playlist-list">
-                <img
-                  src={item.track.album.images[0]?.url}
-                  alt={`${item.track.album.images[0]?.url} cover`}
-                />
+                {item.track.album && item.track.album.images[0] && (
+                  <img
+                    src={item.track.album.images[0].url}
+                    alt={`${item.track.name} cover`}
+                  />
+                )}
                 <div className="playlist-details">
                   <p>{item.track.name}</p>
-                  <p>{item.track.artists[0].name}</p>
+                  {item.track.artists && item.track.artists[0] && (
+                    <p>{item.track.artists[0].name}</p>
+                  )}
                 </div>
               </div>
-              <button className="cta-bouton" onClick={() => playTrack(item.track.uri)}>
+              <button
+                className="cta-bouton"
+                onClick={() => playTrack(item.track.uri)}
+              >
                 <img src={Play} alt="Play" />
               </button>
             </div>
